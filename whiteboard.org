@@ -288,3 +288,17 @@ Use ocaml-platform-meta from Opam, if Opam is available.
 **** Images
 Use a prebuild Snap, AppImage, Flatpak. We should first aim for Snap
 since its the default in Ubuntu.
+* <2020-02-03>
+** Linux
+#+BEGIN_SRC sh
+$ cat pkg <<<EOF
+batteries.2.11.0
+dune.2.1.3
+EOF
+$ opam depext -i $(< pkg)
+#+END_SRC
+Docker ocaml/opam2.
+** Windows
+We may need to sign the installer.
+Set-ExecutionPolicy unrestricted
+Unblock-File -Path C:\Users\User\ocaml-platform\windows\installer.ps1

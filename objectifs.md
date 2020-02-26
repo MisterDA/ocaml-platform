@@ -1,0 +1,11 @@
+- distribution multiplatforme
+  object distributé identique
+- représentatif de l'écosystème et des besoins des utilisateurs
+- environnement de dev réaliste, bien intégré
+- produire des exécutables (distribuables)
+- une porte de sortie
+- plateforme extensible "en place"
+- une porte d’entrée "getting started"
+- documentation uniforme, complète, et accessible
+- prévue pour être communautaire, politique d’inclusion/mise à jour/exclusion bien définie
+- CI/CD
