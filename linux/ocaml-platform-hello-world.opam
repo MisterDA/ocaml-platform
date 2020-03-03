@@ -1,6 +1,6 @@
 opam-version: "2.0"
 version: "~dev"
-name: "ocaml-platform"
+name: "ocaml-platform-hello-world"
 synopsis: "A curated set of OCaml packages"
 maintainer: "Antonin Décimo <antonin.decimo@gmail.com>"
 authors: "Antonin Décimo <antonin.decimo@gmail.com>"
@@ -8,6 +8,6 @@ license: "MIT"
 homepage: "https://github.com/MisterDA/ocaml-platform"
 bug-reports: "https://github.com/MisterDA/ocaml-platform/issues"
 depends: [
-          "user-setup"
-          ]
+  "ocaml-platform"
+]
 dev-repo: "git+https://github.com/MisterDA/ocaml-platform"
