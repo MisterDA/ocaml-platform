@@ -3,8 +3,6 @@
 set -eu
 set -o xtrace
 
-pacman -S --needed --noconfirm curl git mingw-w64-x86_64-toolchain unzip
-
 # command -v curl >/dev/null 2>&1 || { echo >&2 "curl is missing." }
 # command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing." }
 # command -v git >/dev/null 2>&1 || { echo >&2 "git is missing." }
@@ -25,6 +23,7 @@ HOST=x86_64-w64-mingw32
 BUILDDIR=/opt/ocaml-platform-build
 
 CURL='curl -SLfs'
+PACMAN='pacman -S --needed --noconfirm'
 
 # CYGWIN="nodosfilewarning winsymlinks:native"
 # export CYGWIN
@@ -42,12 +41,15 @@ export OPAMROOT
 
 # Work around a MSYS2 bug. The two utilities are not correctly prefixed.
 # https://github.com/msys2/MSYS2-packages/issues/937
-if [ ! -e /mingw64/bin/x86_64-w64-mingw32-windres.exe ]; then
-    ln -s /mingw64/bin/windres.exe /mingw64/bin/x86_64-w64-mingw32-windres.exe
-fi
-if [ ! -e /mingw64/bin/x86_64-w64-mingw32-as.exe ]; then
-    ln -s /mingw64/bin/as.exe /mingw64/bin/x86_64-w64-mingw32-as.exe
-fi
+# if [ ! -e /mingw64/bin/x86_64-w64-mingw32-windres.exe ]; then
+#     ln -s /mingw64/bin/windres.exe /mingw64/bin/x86_64-w64-mingw32-windres.exe
+# fi
+# if [ ! -e /mingw64/bin/x86_64-w64-mingw32-as.exe ]; then
+#     ln -s /mingw64/bin/as.exe /mingw64/bin/x86_64-w64-mingw32-as.exe
+# fi
+
+$PACMAN base-devel curl git unzip
+$PACMAN msys2-devel # mingw-w64-x86_64-toolchain
 
 
 mkdir -p "$PREFIX" "$BUILDDIR"
