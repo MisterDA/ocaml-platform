@@ -39,18 +39,17 @@ OPAMROOT="$PREFIX"/opam
 export OPAMROOT
 
 
+$PACMAN base-devel curl git unzip
+$PACMAN mingw-w64-x86_64-toolchain # msys2-devel
+
 # Work around a MSYS2 bug. The two utilities are not correctly prefixed.
 # https://github.com/msys2/MSYS2-packages/issues/937
-# if [ ! -e /mingw64/bin/x86_64-w64-mingw32-windres.exe ]; then
-#     ln -s /mingw64/bin/windres.exe /mingw64/bin/x86_64-w64-mingw32-windres.exe
-# fi
-# if [ ! -e /mingw64/bin/x86_64-w64-mingw32-as.exe ]; then
-#     ln -s /mingw64/bin/as.exe /mingw64/bin/x86_64-w64-mingw32-as.exe
-# fi
-
-$PACMAN base-devel curl git unzip
-$PACMAN msys2-devel # mingw-w64-x86_64-toolchain
-
+if [ ! -e /mingw64/bin/x86_64-w64-mingw32-windres.exe ]; then
+    ln -s /mingw64/bin/windres.exe /mingw64/bin/x86_64-w64-mingw32-windres.exe
+fi
+if [ ! -e /mingw64/bin/x86_64-w64-mingw32-as.exe ]; then
+    ln -s /mingw64/bin/as.exe /mingw64/bin/x86_64-w64-mingw32-as.exe
+fi
 
 mkdir -p "$PREFIX" "$BUILDDIR"
 cd "$BUILDDIR" || exit
