@@ -16,7 +16,7 @@ OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
 
 OCAML_VERSION=4.10.0
 OPAM_VERSION=2.0.6
-DUNIVERSE_VERSION=depext
+DUNIVERSE_VERSION=master
 DUNE_VERSION=2.3.1
 FLEXDLL_VERSION=0.37
 
