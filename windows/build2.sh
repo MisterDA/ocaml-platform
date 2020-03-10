@@ -41,7 +41,7 @@ case "$(uname)" in
         BUILD=x86_64-pc-cygwin
         HOST=x86_64-w64-mingw32
         ;;
-    MSYS*) # MSYS2+MinGW-w64
+    MINGW64*)
         BUILD=x86_64-pc-msys
         HOST=x86_64-w64-mingw32
 
@@ -51,14 +51,11 @@ case "$(uname)" in
 
         # Work around a MSYS2 bug. The two utilities are not correctly prefixed.
         # https://github.com/msys2/MSYS2-packages/issues/937
-        PATH=/mingw64/bin:$PATH
-        export PATH
-        MSYS_PREFIX=/mingw64
-        if [ ! -e "${MSYS_PREFIX}/bin/${HOST}-windres.exe" ]; then
-            ln -s "${MSYS_PREFIX}"/bin/windres.exe "${MSYS_PREFIX}/bin/${HOST}-windres.exe"
+        if [ ! -e "${MSYSTEM_PREFIX}/bin/${HOST}-windres.exe" ]; then
+            ln -s "${MSYSTEM_PREFIX}"/bin/windres.exe "${MSYSTEM_PREFIX}/bin/${HOST}-windres.exe"
         fi
-        if [ ! -e "${MSYS_PREFIX}/bin/${HOST}-as.exe" ]; then
-            ln -s "${MSYS_PREFIX}"/bin/as.exe "${MSYS_PREFIX}/bin/${HOST}-as.exe"
+        if [ ! -e "${MSYSTEM_PREFIX}/bin/${HOST}-as.exe" ]; then
+            ln -s "${MSYSTEM_PREFIX}"/bin/as.exe "${MSYSTEM_PREFIX}/bin/${HOST}-as.exe"
         fi
 
         ;;
