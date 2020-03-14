@@ -6,7 +6,7 @@ ARG PREFIX
 ARG OCAML_VERSION=4.10.0
 ARG OPAM_VERSION=2.0.6
 ARG DUNIVERSE_VERSION=master
-ARG DUNE_VERSION=2.3.1
+ARG DUNE_VERSION=2.4.0
 
 USER root
 RUN apt-get install -y m4
@@ -65,7 +65,7 @@ COPY --from=builder "$PREFIX" "$PREFIX"/
 RUN  cd "$PREFIX" && \
         opam init -a --disable-sandboxing -y $OPAM_REPO && \
         eval $(opam env) && \
-        opam install -y depext && \
+        opam install -y opam-depext && \
         opam depext -y ocaml-platform && \
         opam install -y ocaml-platform
 
