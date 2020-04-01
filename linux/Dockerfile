@@ -30,14 +30,14 @@ ADD --chown=user:user https://github.com/ocaml/ocaml/archive/$OCAML_VERSION.tar.
 RUN tar xf ocaml-$OCAML_VERSION.tar.gz && \
     cd ocaml-$OCAML_VERSION && \
     ./configure --prefix="$PREFIX" && \
-    make -j$(nproc) world.opt && \
+    make -j$(nproc) world.opt V=1 && \
     make install
 
 ADD --chown=user:user https://github.com/ocaml/opam/archive/$OPAM_VERSION.zip opam-$OPAM_VERSION.zip
 RUN unzip opam-$OPAM_VERSION.zip && \
     cd opam-$OPAM_VERSION && \
     ./configure --prefix="$PREFIX" && \
-    make lib-ext all -j1 DUNE_ARGS='--verbose' && \
+    make lib-ext all -j1 DUNE_ARGS='--verbose' V=1 && \
     make -j1 && \
     make install
 
