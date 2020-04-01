@@ -1,10 +1,13 @@
 #!/bin/sh
 
-# Execute this in the Developper Command Prompt!
+# Cygwin setup:
+# Run in x64 Native Tools Command Prompt for VS if compiling with MSVC
+#
+#     setup-x86_64 --root=C:\cygwin64 --quiet-mode --no-desktop --no-startmenu ^
+#                  --packages=curl,diffutils,git,m4,make,nano,patch,rsync,unzip ^
+#                  --site "http://mirrors.kernel.org/sourceware/cygwin/"
+#     C:\cygwin64\bin\mintty -
 
-# Cygwin setup
-# setup-x86_64 --root=C:\cygwin64 --quiet-mode --no-desktop --no-startmenu --packages=curl,diffutils,git,m4,make,nano,patch,rsync,unzip --site "http://mirrors.kernel.org/sourceware/cygwin/"
-# C:\cygwin64\bin\mintty -
 
 set -eu
 set -o xtrace
@@ -64,27 +67,26 @@ make -j"$(nproc)" install
 # make release
 # make install PREFIX="$PREFIX"
 
-
 cd "$BUILDDIR" || exit
 curl -SLfs "https://github.com/ocaml/opam/archive/master.zip" -o opam.zip
 unzip opam.zip
 
 cd opam-master || exit
 
-sed -e 's|^URL_mccs.*|URL_mccs = https://github.com/AltGr/ocaml-mccs/archive/1.1+11.tar.gz|' \
-    -e 's|^MD5_mccs.*|MD5_mccs = 9c0038d0e945f742b9320a662566288b|' \
-    -i src_ext/Makefile.sources
-mkdir -p src_ext/patches/mccs
-curl -SLfs https://patch-diff.githubusercontent.com/raw/AltGr/ocaml-mccs/pull/29.patch \
-     -o src_ext/patches/mccs/0001-Fix-operator-requiring-const-specifier-in-C-17.patch
+# sed -e 's|^URL_mccs.*|URL_mccs = https://github.com/AltGr/ocaml-mccs/archive/1.1+11.tar.gz|' \
+#     -e 's|^MD5_mccs.*|MD5_mccs = 9c0038d0e945f742b9320a662566288b|' \
+#     -i src_ext/Makefile.sources
+# mkdir -p src_ext/patches/mccs
+# curl -SLfs https://patch-diff.githubusercontent.com/raw/AltGr/ocaml-mccs/pull/29.patch \
+#      -o src_ext/patches/mccs/0001-Fix-operator-requiring-const-specifier-in-C-17.patch
 
 ./configure --build="$BUILD" --host="$HOST" --prefix="$PREFIX"
-make lib-ext all -j1 DUNE_ARGS='--verbose' OCAMLC='ocamlc -unsafe-string' OCAMLOPT='ocamlopt -unsafe-string'
+make lib-ext all -j1 DUNE_ARGS='--verbose' # OCAMLC='ocamlc -unsafe-string' OCAMLOPT='ocamlopt -unsafe-string'
 make install
 
 cd "$PREFIX" || exit
 opam init -a --disable-sandboxing -y $OPAM_REPO
 eval $(opam env)
-opam install -y opam-depext
-opam depext -y ocaml-platform
+# opam install -y opam-depext
+# opam depext -y ocaml-platform
 opam install -y ocaml-platform
