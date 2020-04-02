@@ -1,0 +1,12 @@
+diff --git a/src/core/opamSystem.ml b/src/core/opamSystem.ml
+index 0886e182..55c1a92d 100644
+--- a/src/core/opamSystem.ml
++++ b/src/core/opamSystem.ml
+@@ -451,7 +451,7 @@ let make_command
+   | `Cmd cmd ->
+     OpamProcess.command
+       ~env ~name ?text ~verbose ?metadata ?allow_stdin ?stdout ?dir
+-      cmd args
++      (Filename.quote_command cmd []) args
+   | `Not_found -> command_not_found cmd
+   | `Denied -> permission_denied cmd

@@ -45,6 +45,7 @@ OCAML_VERSION=4.10.0
 OPAM_VERSION=master
 DUNIVERSE_VERSION=master
 FLEXDLL_VERSION=0.37
+BUILDDIR="$PWD"
 
 
 
@@ -53,6 +54,7 @@ command -v git >/dev/null 2>&1 || { echo >&2 "git is missing."; exit 1; }
 command -v make >/dev/null 2>&1 || { echo >&2 "make is missing."; exit 1; }
 command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing.";  exit 1; }
+cygpath() { /usr/bin/cygpath.exe "$@"; }
 
 
 while getopts 'c:' c; do
@@ -78,7 +80,8 @@ case $COMPILER in
         BUILD=x86_64-unknown-cygwin
         HOST=x86_64-pc-windows
 
-        PREFIX="${PROGRAMFILES}\\Ocaml Platform"
+        # PREFIX="${PROGRAMFILES}\\OCaml Platform"
+        PREFIX='C:\OCamlPlatform'
         PATH="$(cygpath "${PREFIX}\\bin"):${PATH}"
         export PATH
         OPAMROOT="${PREFIX}\\opam"
@@ -152,7 +155,9 @@ cp -r "flexdll-${FLEXDLL_VERSION}"/* "ocaml-${OCAML_VERSION}/flexdll/"
 cd ocaml-$OCAML_VERSION || exit
 if [ "${COMPILER}" = msvc ]; then
     eval $(tools/msvs-promote-path)
+    patch -p1 < ../0001-flexdll-h-include-path-msvc.patch
 fi
+
 ./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
 make -j"$(nproc)" flexdll V=1
 make -j"$(nproc)" world.opt V=1
@@ -179,8 +184,19 @@ make install
 
 
 cd "$PREFIX" || exit
-opam init -a --disable-sandboxing -y "$OPAM_REPO"
-eval $(opam env)
-opam install -y --with-doc \
-    $(opam list --required-by ocaml-platform --columns=package -s) \
+opam init --verbose -a --disable-sandboxing -y "$OPAM_REPO"
+
+eval $(opam env | sed 's/\r$//')
+OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX;
+CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH;
+OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
+MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
+PATH="$(cygpath -p "$PATH")"; export PATH;
+if [ "${COMPILER}" = msvc ]; then
+    eval $("${BUILDDIR}/ocaml-${OCAML_VERSION}/tools/msvs-promote-path")
+fi
+
+
+opam install --verbose -y --with-doc \
+    $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
     ocaml-platform
