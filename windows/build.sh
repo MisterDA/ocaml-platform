@@ -26,11 +26,13 @@ set -o xtrace
 #
 # 2.2. MSYS2
 #
-# Run in the MSYS2 shell.
+# Run in the msys2 shell.
 #
 #     pacman -Syuu --noconfirm
 #     pacman -Syu --noconfirm
 #     pacman -S --needed --noconfirm base-devel mingw-w64-cross-toolchain curl git rsync unzip
+#
+# Then switch to the mingw64 shell.
 #
 #
 # Then, run in the last opened shell
@@ -156,9 +158,11 @@ cd ocaml-$OCAML_VERSION || exit
 if [ "${COMPILER}" = msvc ]; then
     eval $(tools/msvs-promote-path)
     patch -p1 < ../0001-flexdll-h-include-path-msvc.patch
+    ./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
+elif [ "${COMPILER}" = mingw ]; then
+    ./configure --prefix="$(cygpath -m "$PREFIX")"
 fi
 
-./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
 make -j"$(nproc)" flexdll V=1
 make -j"$(nproc)" world.opt V=1
 make -j"$(nproc)" flexlink.opt V=1
@@ -178,7 +182,11 @@ mkdir -p src_ext/patches/dune-local
 curl -SLfs 'https://github.com/MisterDA/dune/commit/261ff273e099d73ea5023d82b83cf10390feb7bd.patch' \
      -o src_ext/patches/dune-local/0001-Quote-program-path-given-to-exec.patch
 
-./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
+if [ "${COMPILER}" = msvc ]; then
+    ./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
+elif [ "${COMPILER}" = mingw ]; then
+    ./configure --prefix="$(cygpath -m "$PREFIX")"
+fi
 make lib-ext all -j1 DUNE_ARGS='--verbose' V=1
 make install
 
