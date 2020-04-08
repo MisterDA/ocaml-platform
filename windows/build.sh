@@ -191,9 +191,6 @@ patch -p1 < "${ROOT_DIR}/0001-String_val-returns-const-char.patch"
 sed -E -i src_ext/Makefile.sources \
     -e 's|^(URL_dune-local = ).*$|\1https://github.com/ocaml/dune/archive/1.11.4.tar.gz|' \
     -e 's|^(MD5_dune-local = ).*$|\13c04b502b0b17d60b805b730eefe61a6|'
-mkdir -p src_ext/patches/dune-local
-curl -SLfs 'https://github.com/MisterDA/dune/commit/261ff273e099d73ea5023d82b83cf10390feb7bd.patch' \
-     -o src_ext/patches/dune-local/0001-Quote-program-path-given-to-exec.patch
 
 case "$HOST" in
     "$MSVC_HOST")  ./configure --prefix="$(cygpath -m "$PREFIX")" --build="$BUILD" --host="$HOST" ;;
