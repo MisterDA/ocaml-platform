@@ -41,18 +41,20 @@ set -o xtrace
 #     ./build.sh -c mingw       # if compiling with MinGW-w64
 #
 
-OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
+if [ -z "$OPAM_REPO" ]; then
+    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
+fi
 
-OCAML_VERSION=4.10.0
-OPAM_VERSION=master
-DUNIVERSE_VERSION=master
-FLEXDLL_VERSION=0.37
+if [ -z "$OCAML_VERSION" ]; then OCAML_VERSION=4.10.0; fi
+if [ -z "$OPAM_VERSION"  ]; then OPAM_VERSION=master;  fi
+if [ -z "$DUNIVERSE_VERSION" ]; then DUNIVERSE_VERSION=master; fi
+if [ -z "$FLEXDLL_VERSION"   ]; then FLEXDLL_VERSION=0.37;     fi
 
-MSVC_HOST=x86_64-pc-windows
-MINGW_HOST=x86_64-w64-mingw32
+if [ -z "$MSVC_HOST" ]; then  MSVC_HOST=x86_64-pc-windows;   fi
+if [ -z "$MINGW_HOST" ]; then MINGW_HOST=x86_64-w64-mingw32; fi
 
-BUILDDIR="$(pwd)"
-ROOT_DIR="$(dirname "$0")"
+if [ -z "$BUILDDIR" ]; then BUILDDIR="$(pwd)"; fi
+if [ -z "$ROOT_DIR" ]; then ROOT_DIR="$(dirname "$0")"; fi
 
 command -v curl >/dev/null 2>&1 || { echo >&2 "curl is missing."; exit 1; }
 command -v git >/dev/null 2>&1 || { echo >&2 "git is missing."; exit 1; }
