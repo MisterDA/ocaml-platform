@@ -204,14 +204,14 @@ cd "$PREFIX" || exit
 opam init --verbose -a --disable-sandboxing -y "$OPAM_REPO"
 
 eval $(opam env | sed 's/\r$//')
-# OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX;
-# CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH;
-# OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
-# MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
-# PATH="$(cygpath -p "$PATH")"; export PATH;
-# if [ "${HOST}" = msvc ]; then
-#     eval $("${BUILDDIR}/ocaml-${OCAML_VERSION}/tools/msvs-promote-path")
-# fi
+OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX;
+CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH;
+OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
+MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
+PATH="$(cygpath -p "$PATH")"; export PATH;
+if [ "${HOST}" = msvc ]; then
+    eval $("${BUILDDIR}/ocaml-${OCAML_VERSION}/tools/msvs-promote-path")
+fi
 
 
 opam install --verbose -y --with-doc \
