@@ -209,10 +209,11 @@ CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIB
 OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
 MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
 PATH="$(cygpath -p "$PATH")"; export PATH;
-if [ "${HOST}" = msvc ]; then
+if [ "${HOST}" = "$MSVC_HOST" ]; then
     eval $("${BUILDDIR}/ocaml-${OCAML_VERSION}/tools/msvs-promote-path")
 fi
 
+cp "${BUILDDIR}/opam-${OPAM_VERSION}/shell/dot_ocamlinit" "${HOME}/.ocamlinit"
 
 opam install --verbose -y --with-doc \
     $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
