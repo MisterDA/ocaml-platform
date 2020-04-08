@@ -151,8 +151,8 @@ tar xf "flexdll-${FLEXDLL_VERSION}.tar.gz"
 
 
 # Allow C++ compilation
-curl -SLfsC- "https://github.com/alainfrisch/flexdll/pull/48.diff" -o 48.diff
-patch -d "flexdll-${FLEXDLL_VERSION}" -p1 < 48.diff
+curl -SLfs "https://github.com/alainfrisch/flexdll/pull/48.diff" -o 0001-allow-linking-c++.diff
+patch -d "flexdll-${FLEXDLL_VERSION}" -p1 < 0001-allow-linking-c++.diff
 cp -r "flexdll-${FLEXDLL_VERSION}"/* "ocaml-${OCAML_VERSION}/flexdll/"
 
 
@@ -178,7 +178,13 @@ cd .. || exit
 curl -SLfs "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.zip" \
      -o "opam-${OPAM_VERSION}.zip"
 unzip opam-$OPAM_VERSION.zip
-cd opam-$OPAM_VERSION
+
+curl -SLfsC- "https://github.com/ocaml/opam/pull/4132.diff" -o 0001-fix-unused-module.diff
+patch -d "opam-$OPAM_VERSION" -p1 < 0001-fix-unused-module.diff
+
+cd "opam-$OPAM_VERSION" || exit
+
+patch -p1 < "${ROOT_DIR}/0001-String_val-returns-const-char.patch"
 
 sed -E -i src_ext/Makefile.sources \
     -e 's|^(URL_dune-local = ).*$|\1https://github.com/ocaml/dune/archive/1.11.4.tar.gz|' \
