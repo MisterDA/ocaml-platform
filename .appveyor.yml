@@ -1,0 +1,30 @@
+image: Visual Studio 2019
+platform: x64
+
+clone_depth: 1
+
+environment:
+  global:
+    CYG_ROOT: C:\cygwin64
+    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
+    CYG_CACHE: C:/cygwin/var/cache/setup
+  matrix:
+    - BUILD: pc-cygwin
+      HOST: pc-windows
+    - BUILD: pc-msys
+      HOST: pc-windows
+    - BUILD: pc-cygwin
+      HOST: w64-mingw32
+    - BUILD: pc-msys
+      HOST: pc-msys
+    - BUILD: w64-mingw32
+      HOST: w64-mingw32
+
+install:
+  - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\appveyor.cmd"
+
+build_script:
+  - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1')

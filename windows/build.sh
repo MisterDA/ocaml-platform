@@ -47,9 +47,12 @@ OCAML_VERSION=4.10.0
 OPAM_VERSION=master
 DUNIVERSE_VERSION=master
 FLEXDLL_VERSION=0.37
-BUILDDIR="$PWD"
 
+MSVC_HOST=x86_64-pc-windows
+MINGW_HOST=x86_64-w64-mingw32
 
+BUILDDIR="$(pwd)"
+ROOT_DIR="$(dirname "$0")"
 
 command -v curl >/dev/null 2>&1 || { echo >&2 "curl is missing."; exit 1; }
 command -v git >/dev/null 2>&1 || { echo >&2 "git is missing."; exit 1; }
@@ -63,24 +66,25 @@ while getopts 'c:' c; do
     case $c in
         c)
             case $OPTARG in
-                msvc) COMPILER=$OPTARG ;;
-                mingw) COMPILER=$OPTARG ;;
+                "$MSVC_HOST") HOST=$OPTARG ;;
+                "$MINGW_HOST") HOST=$OPTARG ;;
                 *)  echo >&2 "Unsupported '$c' compiler."; exit 1 ;;
             esac ;;
+        h) echo "build.sh -c <$MSVC_HOST|$MINGW_HOST>"; exit 0 ;;
         *)  echo >&2 "Unsupported '$c' option."; exit 1 ;;
     esac
 done
 
-if [ -z "${COMPILER-}" ]; then
-    echo >&2 "Must set a compiler with -c <msvc|mingw>."
+if [ -z "${HOST-}" ]; then
+    echo >&2 "Must set a compiler with -c <$MSVC_HOST|$MINGW_HOST>."
     exit 1
 fi
 
 
-case $COMPILER in
-    msvc)
+case $HOST in
+    "$MSVC_HOST")
         BUILD=x86_64-unknown-cygwin
-        HOST=x86_64-pc-windows
+        HOST="$MSVC_HOST"
 
         # PREFIX="${PROGRAMFILES}\\OCaml Platform"
         PREFIX='C:\OCamlPlatform'
@@ -93,25 +97,23 @@ case $COMPILER in
         CAML_LD_LIBRARY_PATH="${OCAMLLIB}\\stublibs;${OCAMLLIB}"
         export CAML_LD_LIBRARY_PATH
         ;;
-    mingw)
+    "$MINGW_HOST")
         PREFIX=/opt/ocaml-platform
         PATH="${PREFIX}/bin:${PATH}"
         export PATH
         OPAMROOT="${PREFIX}/opam"
         export OPAMROOT
+        HOST="$MINGW_HOST"
 
         case "$(uname)" in
             CYGWIN_NT*)
                 BUILD=x86_64-pc-cygwin
-                HOST=x86_64-w64-mingw32
                 ;;
             MSYS*)
                 BUILD=x86_64-pc-msys
-                HOST=x86_64-w64-mingw32
                 ;;
             MINGW64*)
                 BUILD=x86_64-pc-msys
-                HOST=x86_64-w64-mingw32
 
                 OCAMLLIB="C:\\${MSYSTEM_PREFIX}\\opt\\ocaml-platform\\lib\\ocaml"
                 export OCAMLLIB
@@ -139,29 +141,32 @@ esac
 mkdir -p "$(cygpath "$PREFIX")"
 
 
-curl -SLfs "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
+curl -SLfsC- "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
      -o "ocaml-${OCAML_VERSION}.tar.gz"
 tar xf "ocaml-${OCAML_VERSION}.tar.gz"
 
-curl -SLfs "https://github.com/alainfrisch/flexdll/archive/${FLEXDLL_VERSION}.tar.gz" \
+curl -SLfsC- "https://github.com/alainfrisch/flexdll/archive/${FLEXDLL_VERSION}.tar.gz" \
      -o "flexdll-${FLEXDLL_VERSION}.tar.gz"
 tar xf "flexdll-${FLEXDLL_VERSION}.tar.gz"
 
 
 # Allow C++ compilation
-curl -SLfs "https://github.com/alainfrisch/flexdll/pull/48.diff" -o 48.diff
+curl -SLfsC- "https://github.com/alainfrisch/flexdll/pull/48.diff" -o 48.diff
 patch -d "flexdll-${FLEXDLL_VERSION}" -p1 < 48.diff
 cp -r "flexdll-${FLEXDLL_VERSION}"/* "ocaml-${OCAML_VERSION}/flexdll/"
 
 
 cd ocaml-$OCAML_VERSION || exit
-if [ "${COMPILER}" = msvc ]; then
-    eval $(tools/msvs-promote-path)
-    patch -p1 < ../0001-flexdll-h-include-path-msvc.patch
-    ./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
-elif [ "${COMPILER}" = mingw ]; then
-    ./configure --prefix="$(cygpath -m "$PREFIX")"
-fi
+patch -p1 < "${ROOT_DIR}/0001-flexdll-h-include-path-msvc.patch"
+case "$HOST" in
+    "${MSVC_HOST}")
+        eval $(tools/msvs-promote-path)
+        ./configure --prefix="$(cygpath -m "$PREFIX")" --build="$BUILD" --host="$HOST"
+        ;;
+    "${MINGW_HOST}")
+        ./configure --prefix="$(cygpath -m "$PREFIX")"
+        ;;
+esac
 
 make -j"$(nproc)" flexdll V=1
 make -j"$(nproc)" world.opt V=1
@@ -182,11 +187,10 @@ mkdir -p src_ext/patches/dune-local
 curl -SLfs 'https://github.com/MisterDA/dune/commit/261ff273e099d73ea5023d82b83cf10390feb7bd.patch' \
      -o src_ext/patches/dune-local/0001-Quote-program-path-given-to-exec.patch
 
-if [ "${COMPILER}" = msvc ]; then
-    ./configure --build="$BUILD" --host="$HOST" --prefix="$(cygpath -m "$PREFIX")"
-elif [ "${COMPILER}" = mingw ]; then
-    ./configure --prefix="$(cygpath -m "$PREFIX")"
-fi
+case "$HOST" in
+    "$MSVC_HOST")  ./configure --prefix="$(cygpath -m "$PREFIX")" --build="$BUILD" --host="$HOST" ;;
+    "$MINGW_HOST") ./configure --prefix="$(cygpath -m "$PREFIX")" ;;
+esac
 make lib-ext all -j1 DUNE_ARGS='--verbose' V=1
 make install
 
@@ -200,7 +204,7 @@ CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIB
 OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
 MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
 PATH="$(cygpath -p "$PATH")"; export PATH;
-if [ "${COMPILER}" = msvc ]; then
+if [ "${HOST}" = msvc ]; then
     eval $("${BUILDDIR}/ocaml-${OCAML_VERSION}/tools/msvs-promote-path")
 fi
 
