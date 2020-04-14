@@ -4,10 +4,6 @@ platform: x64
 clone_depth: 1
 
 environment:
-  global:
-    CYG_ROOT: C:\cygwin64
-    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
-    CYG_CACHE: C:/cygwin/var/cache/setup
   matrix:
     - BUILD: pc-cygwin
       HOST: pc-windows
@@ -19,12 +15,19 @@ environment:
       HOST: pc-msys
     - BUILD: w64-mingw32
       HOST: w64-mingw32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
 
 for:
   -
     matrix:
       only:
         - BUILD: pc-cygwin
+
+    environment:
+      CYG_ROOT: C:\cygwin64
+      CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
+      CYG_CACHE: C:/cygwin/var/cache/setup
     install:
         - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\cygwin.cmd"
     build_script:
@@ -45,6 +48,18 @@ for:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
     build_script:
       - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST"
+  -
+    matrix:
+      only:
+        - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    build_script:
+      - docker build -f "$APPVEYOR_BUILD_FOLDER/linux/Dockerfile" -o ocaml_platform "$APPVEYOR_BUILD_FOLDER/linux"
+  -
+    matrix:
+      only:
+        - APPVEYOR_BUILD_WORKER_IMAGE: macOS
+    build_script:
+      - "$APPVEYOR_BUILD_FOLDER/macos/build.sh"
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
