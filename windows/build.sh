@@ -11,7 +11,7 @@ set -o xtrace
 #
 # Run in x64 Native Tools Command Prompt for VS.
 #
-#     setup-x86_64 --root=C:\cygwin64 --quiet-mode --no-desktop --no-startmenu ^
+#     setup-x86_64 --root=C:\cygwin64 --quiet-mode --no-desktop --no-startmenu --no-shortcuts --upgrade-also ^
 #                  --packages=curl,diffutils,git,m4,make,nano,patch,rsync,unzip ^
 #                  --site "http://mirrors.kernel.org/sourceware/cygwin/"
 #     C:\cygwin64\bin\mintty -
@@ -19,7 +19,7 @@ set -o xtrace
 # 2. MinGW-w64
 # 2.1. Cygwin
 #
-#     setup-x86_64 --root=C:\cygwin64 --quiet-mode --no-desktop --no-startmenu ^
+#     setup-x86_64 --root=C:\cygwin64 --quiet-mode --no-desktop --no-startmenu --no-shortcuts --upgrade-also ^
 #                  --packages=curl,git,m4,make,mingw64-x86_64-gcc-core,nano,patch,rsync,unzip ^
 #                  --site "http://mirrors.kernel.org/sourceware/cygwin/"
 #     C:\cygwin64\bin\mintty -
@@ -56,11 +56,11 @@ if [ -z "${MINGW_HOST-}" ]; then MINGW_HOST=x86_64-w64-mingw32; fi
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
 
-command -v curl >/dev/null 2>&1 || { echo >&2 "curl is missing."; exit 1; }
-command -v git >/dev/null 2>&1 || { echo >&2 "git is missing."; exit 1; }
-command -v make >/dev/null 2>&1 || { echo >&2 "make is missing."; exit 1; }
+command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
+command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
+command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
 command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
-command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing.";  exit 1; }
+command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 cygpath() { /usr/bin/cygpath.exe "$@"; }
 
 
@@ -138,6 +138,8 @@ EOF
             *) echo >&2 "Unsupported '$(uname)' build environment."; exit 1 ;;
         esac
 esac
+
+env | sort
 
 
 mkdir -p "$(cygpath "$PREFIX")"

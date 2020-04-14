@@ -20,11 +20,34 @@ environment:
     - BUILD: w64-mingw32
       HOST: w64-mingw32
 
-install:
-  - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\appveyor.cmd"
+for:
+  -
+    matrix:
+      only:
+        - BUILD: pc-cygwin
+    install:
+        - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\cygwin.cmd"
+    build_script:
+        - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
+  -
+    matrix:
+      only:
+        - BUILD: pc-msys
+    install:
+        - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
+    build_script:
+        - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
+  -
+    matrix:
+      only:
+        - BUILD: w64-mingw32
+    install:
+      - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
+    build_script:
+      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
 
-build_script:
-  - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
 
+# Uncomment this to enable Remote Desktop on the build worker at the end of the
+# build. The worker is available for the remainder of the allocated hour.
 on_finish:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1')

@@ -1,7 +1,7 @@
 @rem Do not call setlocal!
 @echo off
 
-set Path=%CYG_ROOT%\bin;%Path%
+set Path=%CYG_ROOT%\bin;%PATH%
 set OCAML_PREV_PATH=%PATH%
 set OCAML_PREV_LIB=%LIB%
 set OCAML_PREV_INCLUDE=%INCLUDE%
@@ -14,7 +14,7 @@ rem needs upgrading.
 set CYGWIN_PACKAGES=cygwin curl diffutils git m4 make patch unzip
 set CYGWIN_COMMANDS=cygcheck curl diffutils git m4 make patch unzip
 
-if "%PORT%" equ "w64-mingw32" (
+if "%HOST%" equ "w64-mingw32" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-x86_64-gcc-core
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% x86_64-w64-mingw32-gcc
 )
@@ -27,15 +27,11 @@ call :UpgradeCygwin
 
 call :SaveVars
 
-if "%HOST%" equ "pc-windows" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+if "%HOST%" equ "pc-windows" (
+  call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+)
 
-bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST"
 if errorlevel 1 exit /b 1
-
-set PATH=C:\OCaml\%OCAML_VERSION%\%HOST%\bin;%PATH%
-
-if "%HOST%" equ "w64-mingw32" set PATH=%CYG_ROOT%\usr\x86_64-w64-mingw32\sys-root\mingw\bin;%PATH%
-
 goto :EOF
 
 :SaveVars
