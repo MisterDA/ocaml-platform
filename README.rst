@@ -1,11 +1,18 @@
 OCaml Platform
 ==============
 
+.. image:: https://ci.appveyor.com/api/projects/status/ipf529j5j0vwy5q7?svg=true
+  :target: https://ci.appveyor.com/project/MisterDA/ocaml-platform
+  :alt: Build status
+
 OCaml Platform is a distribution of the `OCaml <https://ocaml.org/>`__
 compiler and runtime, the `OCaml <https://opam.ocaml.org/>`__ Package
 Manager, and a set of curated `OCaml
 packages <./ocaml-platform.opam>`__, easily installable on multiple
 platforms.
+
+.. |Status Badge|
+
 
 Installation
 ------------
