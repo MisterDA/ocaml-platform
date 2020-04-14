@@ -5,6 +5,7 @@ if "%HOST%" equ "pc-windows" (
   set MSYS2_PACKAGES=base-devel git unzip
   call :UpgradeMSYS2
   set MSYSTEM=MSYS
+  call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 )
 
 if "%HOST%" equ "pc-msys" (
