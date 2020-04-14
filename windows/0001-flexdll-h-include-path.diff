@@ -1,0 +1,26 @@
+diff --git a/runtime/unix.c b/runtime/unix.c
+index c0ddbaaaf..4a04996c6 100644
+--- a/runtime/unix.c
++++ b/runtime/unix.c
+@@ -32,7 +32,7 @@
+ #include "caml/config.h"
+ #ifdef SUPPORT_DYNAMIC_LINKING
+ #ifdef __CYGWIN__
+-#include "flexdll.h"
++#include "../flexdll/flexdll.h"
+ #else
+ #include <dlfcn.h>
+ #endif
+diff --git a/runtime/win32.c b/runtime/win32.c
+index 455965e2c..659dcbe46 100644
+--- a/runtime/win32.c
++++ b/runtime/win32.c
+@@ -49,7 +49,7 @@
+ 
+ #include "caml/config.h"
+ #ifdef SUPPORT_DYNAMIC_LINKING
+-#include <flexdll.h>
++#include "../flexdll/flexdll.h"
+ #endif
+ 
+ #ifndef S_ISREG

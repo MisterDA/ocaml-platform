@@ -161,7 +161,7 @@ cp -r "flexdll-${FLEXDLL_VERSION}"/* "ocaml-${OCAML_VERSION}/flexdll/"
 
 
 cd ocaml-$OCAML_VERSION || exit
-patch -p1 < "${ROOT_DIR}/0001-flexdll-h-include-path-msvc.patch"
+patch -p1 < "${ROOT_DIR}/0001-flexdll-h-include-path.diff"
 case "$HOST" in
     "${MSVC_HOST}")
         eval $(tools/msvs-promote-path)
