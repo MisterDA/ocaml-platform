@@ -28,7 +28,7 @@ for:
     install:
         - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\cygwin.cmd"
     build_script:
-        - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
+        - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST"
   -
     matrix:
       only:
@@ -36,7 +36,7 @@ for:
     install:
         - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
     build_script:
-        - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
+        - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST"
   -
     matrix:
       only:
@@ -44,7 +44,7 @@ for:
     install:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
     build_script:
-      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST -b $APPVEYOR_BUILD_FOLDER/windows"
+      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -c x86_64-$HOST"
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
