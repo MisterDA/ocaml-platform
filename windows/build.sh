@@ -183,9 +183,6 @@ curl -SLfs "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.zip" \
      -o "opam-${OPAM_VERSION}.zip"
 unzip opam-$OPAM_VERSION.zip
 
-curl -SLfsC- "https://github.com/ocaml/opam/pull/4132.diff" -o 0001-fix-unused-module.diff
-patch -d "opam-$OPAM_VERSION" -p1 < 0001-fix-unused-module.diff
-
 cd "opam-$OPAM_VERSION" || exit
 
 patch -p1 < "${ROOT_DIR}/0001-String_val-returns-const-char.patch"
