@@ -215,6 +215,7 @@ if [ "${HOST}" = "$MSVC_HOST" ]; then
 fi
 
 cp "${BUILDDIR}/opam-${OPAM_VERSION}/shell/dot_ocamlinit" "${HOME}/.ocamlinit"
+cp "${BUILDDIR}/opam-${OPAM_VERSION}/shell/dot_ocamlinit" "./.ocamlinit"
 
 opam install --verbose -y --with-doc \
     $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
