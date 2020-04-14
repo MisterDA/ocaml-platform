@@ -52,6 +52,7 @@ if [ -z "${FLEXDLL_VERSION-}"   ]; then FLEXDLL_VERSION=0.37;     fi
 
 if [ -z "${MSVC_HOST-}" ]; then  MSVC_HOST=x86_64-pc-windows;   fi
 if [ -z "${MINGW_HOST-}" ]; then MINGW_HOST=x86_64-w64-mingw32; fi
+if [ -z "${MSYS_HOST-}" ]; then MSYS_HOST=x86_64-pc-msys; fi
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
@@ -70,15 +71,16 @@ while getopts 'c:' c; do
             case $OPTARG in
                 "$MSVC_HOST") HOST=$OPTARG ;;
                 "$MINGW_HOST") HOST=$OPTARG ;;
-                *)  echo >&2 "Unsupported '$c' compiler."; exit 1 ;;
+                "$MSYS_HOST") HOST=$OPTARG ;;
+                *)  echo >&2 "Unsupported '$OPTARG' compiler."; exit 1 ;;
             esac ;;
-        h) echo "build.sh -c <$MSVC_HOST|$MINGW_HOST>"; exit 0 ;;
+        h) echo "build.sh -c <$MSVC_HOST|$MINGW_HOST|$MSYS_HOST>"; exit 0 ;;
         *)  echo >&2 "Unsupported '$c' option."; exit 1 ;;
     esac
 done
 
 if [ -z "${HOST-}" ]; then
-    echo >&2 "Must set a compiler with -c <$MSVC_HOST|$MINGW_HOST>."
+    echo >&2 "Must set a compiler with -c <$MSVC_HOST|$MINGW_HOST|$MSYS_HOST>."
     exit 1
 fi
 
@@ -167,7 +169,7 @@ case "$HOST" in
         eval $(tools/msvs-promote-path)
         ./configure --prefix="$(cygpath -m "$PREFIX")" --build="$BUILD" --host="$HOST"
         ;;
-    "${MINGW_HOST}")
+    "${MINGW_HOST}"|"${MSYS_HOST}")
         ./configure --prefix="$(cygpath -m "$PREFIX")"
         ;;
 esac
@@ -193,7 +195,7 @@ sed -E -i src_ext/Makefile.sources \
 
 case "$HOST" in
     "$MSVC_HOST")  ./configure --prefix="$(cygpath -m "$PREFIX")" --build="$BUILD" --host="$HOST" ;;
-    "$MINGW_HOST") ./configure --prefix="$(cygpath -m "$PREFIX")" ;;
+    "$MINGW_HOST"|"${MSYS_HOST}") ./configure --prefix="$(cygpath -m "$PREFIX")" ;;
 esac
 make lib-ext all -j1 DUNE_ARGS='--verbose' V=1
 make install
