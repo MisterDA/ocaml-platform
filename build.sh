@@ -61,7 +61,7 @@ EOF
 CROSS=no
 VERBOSE=no
 
-while getopts 'hs:vx' c; do
+while getopts 'B:H:hs:vx' c; do
     case $c in
         B) BUILD="$OPTARG" ;;
         H) HOST="$OPTARG" ;;
