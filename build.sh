@@ -244,6 +244,8 @@ build_ocaml_platform() {
 }
 
 
+environment
+if [ "$VERBOSE" = yes ]; then env | sort; fi
 build_ocaml
 build_opam
 build_ocaml_platform
