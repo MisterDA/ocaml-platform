@@ -16,10 +16,15 @@ if [ -z "${OCAML_VERSION-}"   ]; then OCAML_VERSION=4.10.0; fi
 if [ -z "${OPAM_VERSION-}"    ]; then OPAM_VERSION=master;  fi
 if [ -z "${FLEXDLL_VERSION-}" ]; then FLEXDLL_VERSION=0.37; fi
 
-if [ -z "${MSVC_HOST-}"   ]; then MSVC_HOST=x86_64-pc-windows;  fi
+if [ -z "${CYGWIN_BUILD-}" ]; then CYGWIN_BUILD=x86_64-pc-cygwin;  fi
+if [ -z "${MINGW_BUILD-}"  ]; then MINGW_BUILD=x86_64-w64-mingw32; fi
+if [ -z "${MSYS_BUILD-}"   ]; then MSYS_BUILD=x86_64-pc-msys;      fi
+
+if [ -z "${CYGWIN_HOST-}" ]; then CYGWIN_HOST=x86_64-pc-cygwin;  fi
 if [ -z "${MINGW_HOST-}"  ]; then MINGW_HOST=x86_64-w64-mingw32; fi
 if [ -z "${MSYS_HOST-}"   ]; then MSYS_HOST=x86_64-pc-msys;      fi
-if [ -z "${CYGWIN_HOST-}" ]; then CYGWIN_HOST=x86_64-pc-cygwin;  fi
+if [ -z "${MSVC_HOST-}"   ]; then MSVC_HOST=x86_64-pc-windows;  fi
+
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
@@ -43,6 +48,7 @@ SYNOPSIS
 	build.sh -c <host> [-x]
 
 OPTIONS
+	-b <build>	Build compiler.
 	-c <host>	Host compiler. Supported values: $MSVC_HOST, $MINGW_HOST, $MSYS_HOST, $CYGWIN_HOST.
 	-s <system>	Build system. Required. Supported values: linux, macos, cygwin, msys2.
 	-x	Use a cross-compiler. Always enabled for $MSVC_HOST.
@@ -67,6 +73,12 @@ while getopts 'c:hs:vx' c; do
                 "$MSYS_HOST")   HOST=$OPTARG ;;
                 "$CYGWIN_HOST") HOST=$OPTARG ;;
                 *) HOST=$OPTARG ;;
+            esac ;;
+        b)  case $OPTARG in
+                "$CYGWIN_BUILD") BUILD=$OPTARG ;;
+                "$MINGW_BUILD")  BUILD=$OPTARG ;;
+                "$MSYS_BUILD")   BUILD=$OPTARG ;;
+                *) BUILD=$OPTARG ;;
             esac ;;
         s)  case $OPTARG in
                 cygwin) HOST_SYSTEM=$OPTARG ;;
