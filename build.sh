@@ -107,7 +107,7 @@ fi
 # $1: source
 # $2: destination
 download_file() {
-    curl -SLFsC- "$1" -o "$2"
+    curl -SLfsC- "$1" -o "$2"
 }
 
 
