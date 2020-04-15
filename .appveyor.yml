@@ -5,18 +5,24 @@ clone_depth: 1
 
 environment:
   matrix:
-    - BUILD: x86_64-pc-cygwin
-      HOST: x86_64-pc-windows
-    - BUILD: x86_64-pc-msys
-      HOST: x86_64-pc-windows
-    - BUILD: x86_64-pc-cygwin
-      HOST: x86_64-w64-mingw32
-    - BUILD: x86_64-pc-msys
-      HOST: x86_64-pc-msys
-    - BUILD: x86_64-w64-mingw32
-      HOST: x86_64-w64-mingw32
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - APPVEYOR_BUILD_WORKER_IMAGE: macOS
+
+    - BUILD: x86_64-pc-cygwin
+      HOST: x86_64-pc-windows
+    - BUILD: x86_64-pc-msys
+      HOST: x86_64-pc-windows
+
+    - BUILD: x86_64-pc-cygwin
+      HOST: x86_64-w64-mingw32
+    - BUILD: x86_64-w64-mingw32
+      HOST: x86_64-w64-mingw32
+
+    # - BUILD: x86_64-pc-cygwin
+    #   HOST: x86_64-pc-cygwin
+    - BUILD: x86_64-pc-msys
+      HOST: x86_64-pc-msys
+
 
 for:
   -
@@ -31,23 +37,16 @@ for:
     install:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\cygwin.cmd"
     build_script:
-      - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s cygwin"
+      - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s cygwin -B $BUILD -H $HOST"
   -
     matrix:
       only:
         - BUILD: x86_64-pc-msys
+          BUILD: x86_64-w64-mingw32
     install:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
     build_script:
-      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s msys2"
-  -
-    matrix:
-      only:
-        - BUILD: x86_64-w64-mingw32
-    install:
-      - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
-    build_script:
-      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s msys2"
+      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s msys2 -B $BUILD -H $HOST"
   -
     matrix:
       only:
