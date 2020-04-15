@@ -158,7 +158,12 @@ EOF
         PATH="$PREFIX/bin:$PATH"; export PATH
     fi
 
-    mkdir -p "$PREFIX"
+    if [ "$HOST_SYSTEM" = linux ]; then
+        sudo mkdir -p "$PREFIX"
+        sudo chown -R "$(id -u):$(id -g)" "$PREFIX"
+    else
+        mkdir -p "$PREFIX"
+    fi
 }
 
 
