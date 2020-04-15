@@ -42,7 +42,7 @@ for:
     matrix:
       only:
         - BUILD: x86_64-pc-msys
-          BUILD: x86_64-w64-mingw32
+        - BUILD: x86_64-w64-mingw32
     install:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
     build_script:
