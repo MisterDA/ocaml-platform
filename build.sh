@@ -137,6 +137,7 @@ environment() {
 -L$MSYSTEM_PREFIX/lib/x86_64-w64-mingw32/9.2.0/
 -L$MSYSTEM_PREFIX/lib/
 EOF
+); export FLEXLINKFLAGS
     elif [ "$HOST_SYSTEM" = linux ]; then
         PREFIX="/opt/$PREFIX_NAME"
         OPAMROOT="${PREFIX}/opam"; export OPAMROOT
