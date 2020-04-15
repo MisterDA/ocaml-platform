@@ -53,9 +53,6 @@ EOF
 
 CROSS=no
 VERBOSE=no
-VERBOSE_MAKE=
-VERBOSE_DUNE=
-VERBOSE_OPAM=
 
 while getopts 'hs:vx' c; do
     case $c in
@@ -67,9 +64,9 @@ while getopts 'hs:vx' c; do
                 *) echo >&2 "Unsupported '$OPTARG' host system."; help >&2; exit 1 ;;
             esac ;;
         v)  VERBOSE=yes
-            VERBOSE_MAKE='V=1'
-            VERBOSE_DUNE='DUNE_ARGS=--verbose'
-            VERBOSE_OPAM='--verbose' ;;
+            V=1; export V # Make
+            DUNE_ARGS='--verbose'; export DUNE_ARGS
+            OPAMVERBOSE=1; export OPAMVERBOSE ;;
         x)  CROSS=yes ;;
         h)  help; exit 0 ;;
         *)  echo >&2 "Unsupported '$c' option."; help >&2; exit 1 ;;
@@ -180,11 +177,11 @@ build_ocaml() {
     fi
 
     if [ "$HOST_WINDOWS" = yes ]; then
-        make -j"$(nproc)" flexdll "$VERBOSE_MAKE"
+        make -j"$(nproc)" flexdll
     fi
-    make -j"$(nproc)" world.opt "$VERBOSE_MAKE"
+    make -j"$(nproc)" world.opt
     if [ "$HOST_WINDOWS" = yes ]; then
-        make -j"$(nproc)" flexlink.opt "$VERBOSE_MAKE"
+        make -j"$(nproc)" flexlink.opt
     fi
     make -j"$(nproc)" install
 
@@ -213,7 +210,7 @@ build_opam() {
         ./configure --prefix="$PREFIX"
     fi
 
-    make lib-ext all -j1 "$VERBOSE_DUNE" "$VERBOSE_MAKE"
+    make lib-ext all -j1
     make install
 
     cd .. || exit
@@ -223,7 +220,7 @@ build_opam() {
 build_ocaml_platform() {
     cd "$PREFIX" || exit
 
-    opam init -a --disable-sandboxing -y "$OPAM_REPO" "$VERBOSE_OPAM"
+    opam init -a --disable-sandboxing -y "$OPAM_REPO"
 
     # FIXME: add depext once the interface for Opam 2.1.0 is finalized
 
@@ -235,12 +232,12 @@ build_ocaml_platform() {
         MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
         PATH="$(cygpath -p "$PATH")"; export PATH;
 
-        opam install --verbose -y --with-doc \
+        opam install -y --with-doc \
              $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
              ocaml-platform
     else
         eval $(opam env)
-        opam install --verbose -y --with-doc \
+        opam install -y --with-doc \
              $(opam list --required-by ocaml-platform --columns=package -s) \
              ocaml-platform
     fi
