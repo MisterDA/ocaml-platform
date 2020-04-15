@@ -126,9 +126,10 @@ environment() {
         OCAMLLIB="${PREFIX}\\lib\\ocaml"; export OCAMLLIB
         CAML_LD_LIBRARY_PATH="${OCAMLLIB}\\stublibs;${OCAMLLIB}"; export CAML_LD_LIBRARY_PATH
 
-        # Flexlink adds wrong prefix to library paths.
-        # FIXME: make that independent of the compiler version
-        FLEXLINKFLAGS=$(cat <<EOF
+        if [ "$HOST_SYSTEM" = msys2 ]; then
+            # Flexlink adds wrong prefix to library paths.
+            # FIXME: make that independent of the compiler version
+            FLEXLINKFLAGS=$(cat <<EOF
 -L/usr/lib/w32api/
 -L$MSYSTEM_PREFIX/lib/gcc/x86_64-w64-mingw32/9.2.0/
 -L$MSYSTEM_PREFIX/lib/gcc/
@@ -137,7 +138,8 @@ environment() {
 -L$MSYSTEM_PREFIX/lib/x86_64-w64-mingw32/9.2.0/
 -L$MSYSTEM_PREFIX/lib/
 EOF
-); export FLEXLINKFLAGS
+            ); export FLEXLINKFLAGS
+        fi
     elif [ "$HOST_SYSTEM" = linux ]; then
         PREFIX="/opt/$PREFIX_NAME"
         OPAMROOT="${PREFIX}/opam"; export OPAMROOT
@@ -180,9 +182,13 @@ build_ocaml() {
         ./configure --prefix="$PREFIX"
     fi
 
-    make -j"$(nproc)" flexdll "$VERBOSE_MAKE"
+    if [ "$HOST_WINDOWS" = yes ]; then
+        make -j"$(nproc)" flexdll "$VERBOSE_MAKE"
+    fi
     make -j"$(nproc)" world.opt "$VERBOSE_MAKE"
-    make -j"$(nproc)" flexlink.opt "$VERBOSE_MAKE"
+    if [ "$HOST_WINDOWS" = yes ]; then
+        make -j"$(nproc)" flexlink.opt "$VERBOSE_MAKE"
+    fi
     make -j"$(nproc)" install
 
     cd .. || exit
