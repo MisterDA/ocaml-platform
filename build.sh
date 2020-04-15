@@ -59,7 +59,7 @@ VERBOSE_MAKE=
 VERBOSE_DUNE=
 VERBOSE_OPAM=
 
-while getopts 'c:hsvx' c; do
+while getopts 'c:hs:vx' c; do
     case $c in
         c)  case $OPTARG in
                 "$MSVC_HOST")   HOST=$OPTARG; CROSS=yes ;;
