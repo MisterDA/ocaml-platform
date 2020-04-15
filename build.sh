@@ -43,11 +43,12 @@ SYNOPSIS
 	build.sh -s <system> [-x]
 
 OPTIONS
-	-s <system>	Build system. Required. Supported values: linux, macos, cygwin, msys2.
+	-s <system>	Build system. Required.
+			Supported values: linux, macos, cygwin, msys2.
 	-x	Use a cross-compiler. Always enabled for $MSVC_HOST.
+		Use the BUILD and HOST environment variables to chose the compilers.
 	-v	Verbose.
 	-h	This help.
-
 EOF
 }
 
@@ -72,6 +73,8 @@ while getopts 'hs:vx' c; do
         *)  echo >&2 "Unsupported '$c' option."; help >&2; exit 1 ;;
     esac
 done
+
+if [ -n "${HOST+x}" ] && [ "$HOST" = "$MSVC_HOST" ]; then CROSS=yes; fi
 
 if [ -z "${HOST_SYSTEM-}" ]; then echo >&2 "Must set a host system with -s."; help >&2; exit 1; fi
 if [ "$CROSS" = yes ]; then
