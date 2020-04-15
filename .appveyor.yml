@@ -8,20 +8,20 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - APPVEYOR_BUILD_WORKER_IMAGE: macOS
 
-    - BUILD: x86_64-unknown-cygwin
+    - BUILD: x86_64-pc-cygwin
       HOST: x86_64-pc-windows
     - BUILD: x86_64-pc-msys
       HOST: x86_64-pc-windows
 
-    - BUILD: x86_64-unknown-cygwin
+    - BUILD: x86_64-pc-cygwin
       HOST: x86_64-w64-mingw32
     - BUILD: x86_64-w64-mingw32
       HOST: x86_64-w64-mingw32
 
     # - BUILD: x86_64-pc-cygwin
     #   HOST: x86_64-pc-cygwin
-    # - BUILD: x86_64-pc-msys
-    #   HOST: x86_64-pc-msys
+    - BUILD: x86_64-pc-msys
+      HOST: x86_64-pc-msys
 
 
 for:
