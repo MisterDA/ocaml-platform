@@ -24,6 +24,9 @@ if [ -z "${MINGW_HOST-}"  ]; then MINGW_HOST=x86_64-w64-mingw32; fi
 if [ -z "${MSYS_HOST-}"   ]; then MSYS_HOST=x86_64-pc-msys;      fi
 if [ -z "${MSVC_HOST-}"   ]; then MSVC_HOST=x86_64-pc-windows;  fi
 
+if [ -z "${HOST-}" ]; then HOST=; fi
+if [ -z "${BUILD=}" ]; then BUILD=; fi
+
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
 
@@ -79,10 +82,9 @@ while getopts 'hs:vx' c; do
     esac
 done
 
-if [ -n "${HOST+x}" ]; then
-    if [ "$HOST" = "$MSVC_HOST" ] || [ "$HOST" = "$MINGW_HOST" ]; then
-        CROSS=yes
-    fi
+
+if [ "$HOST" = "$MSVC_HOST" ] || [ "$HOST" = "$MINGW_HOST" ]; then
+    CROSS=yes
 fi
 
 if [ -z "${HOST_SYSTEM-}" ]; then echo >&2 "Must set a host system with -s."; help >&2; exit 1; fi
