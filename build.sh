@@ -157,6 +157,8 @@ EOF
         OPAMROOT="${PREFIX}/opam"; export OPAMROOT
         PATH="$PREFIX/bin:$PATH"; export PATH
     fi
+
+    mkdir -p "$PREFIX"
 }
 
 
