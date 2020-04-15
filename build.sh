@@ -107,9 +107,9 @@ fi
 # MSYS2 already has an executable /bin/link.exe in current PATH
 # variable, and Visual Studio uses its own link.exe to link object
 # files to executable files.
-if  [ "$HOST_SYSTEM" = msys2 ] && [ "$HOST" = "$MSVC_HOST" ]; then
-    mv /bin/link.exe /bin/link2.exe
-fi
+# if  [ "$HOST_SYSTEM" = msys2 ] && [ "$HOST" = "$MSVC_HOST" ]; then
+#     mv /bin/link.exe /bin/link2.exe
+# fi
 
 
 # $1: source
