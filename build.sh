@@ -59,7 +59,7 @@ VERBOSE_MAKE=
 VERBOSE_DUNE=
 VERBOSE_OPAM=
 
-while getopts 'c:xvh' c; do
+while getopts 'c:hsvx' c; do
     case $c in
         c)  case $OPTARG in
                 "$MSVC_HOST")   HOST=$OPTARG; CROSS=yes ;;
@@ -75,11 +75,11 @@ while getopts 'c:xvh' c; do
                 msys2)  HOST_SYSTEM=$OPTARG ;;
                 *) echo >&2 "Unsupported '$OPTARG' host system."; help >&2; exit 1 ;;
             esac ;;
-        x)  CROSS=yes ;;
         v)  VERBOSE=yes
             VERBOSE_MAKE='V=1'
             VERBOSE_DUNE='DUNE_ARGS=--verbose'
             VERBOSE_OPAM='--verbose' ;;
+        x)  CROSS=yes ;;
         h)  help; exit 0 ;;
         *)  echo >&2 "Unsupported '$c' option."; help >&2; exit 1 ;;
     esac
