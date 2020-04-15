@@ -4,6 +4,9 @@
 
 set -eu
 
+unset BUILD
+unset HOST
+
 if [ -z "${PREFIX_NAME-}" ]; then
     PREFIX_NAME=OCamlPlatform
 fi
@@ -57,6 +60,8 @@ VERBOSE=no
 
 while getopts 'hs:vx' c; do
     case $c in
+        B) BUILD="$OPTARG" ;;
+        H) HOST="$OPTARG" ;;
         s)  case $OPTARG in
                 cygwin) HOST_SYSTEM=$OPTARG ;;
                 linux)  HOST_SYSTEM=$OPTARG ;;
@@ -74,7 +79,11 @@ while getopts 'hs:vx' c; do
     esac
 done
 
-if [ -n "${HOST+x}" ] && [ "$HOST" = "$MSVC_HOST" ]; then CROSS=yes; fi
+if [ -n "${HOST+x}" ]; then
+    if [ "$HOST" = "$MSVC_HOST" ] || [ "$HOST" = "$MINGW_HOST" ]; then
+        CROSS=yes
+    fi
+fi
 
 if [ -z "${HOST_SYSTEM-}" ]; then echo >&2 "Must set a host system with -s."; help >&2; exit 1; fi
 if [ "$CROSS" = yes ]; then
