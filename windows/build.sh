@@ -34,11 +34,6 @@ fi
 
 PREFIX="C:/${PREFIX_NAME}"
 
-if [ "$PORT" = cygwin ]; then
-    PATH="$PWD/ocaml-${OCAML_VERSION}/flexdll:$PATH"; export PATH
-fi
-
-
 build_ocaml() {
     download_file "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
                   "ocaml-${OCAML_VERSION}.tar.gz"
@@ -61,9 +56,13 @@ build_ocaml() {
         ./configure --prefix="$PREFIX"
     fi
 
-    make -j"$(nproc)" flexdll
+    if [ "$PORT" != cygwin ]; then
+       make -j"$(nproc)" flexdll
+    fi
     make -j"$(nproc)" world.opt
-    make -j"$(nproc)" flexlink.opt
+    if [ "$PORT" != cygwin ]; then
+       make -j"$(nproc)" flexlink.opt
+    fi
     make -j"$(nproc)" install
 
     cd .. || exit

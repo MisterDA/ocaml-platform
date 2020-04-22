@@ -6,12 +6,12 @@ rem in the list just so that the Cygwin version is always displayed on the log).
 rem CYGWIN_COMMANDS is a corresponding command to run with --version to test
 rem whether the package works. This is used to verify whether the installation
 rem needs upgrading.
-set CYGWIN_PACKAGES=cygwin make diffutils patch unzip
-set CYGWIN_COMMANDS=cygcheck make diff patch unzip
+set CYGWIN_PACKAGES=cygwin curl make diffutils git patch unzip
+set CYGWIN_COMMANDS=cygcheck curl make diff git patch unzip
 
 if "%PORT%" equ "cygwin" (
-  set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% gcc-g++
-  set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% g++
+  set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% gcc-g++ flexdll
+  set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% g++ flexlink
 )
 
 if "%PORT%" equ "mingw64" (
