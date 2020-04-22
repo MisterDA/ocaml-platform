@@ -24,6 +24,9 @@ command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 download_file() { curl -SLfs "$1" -o "$2"; }
 cygpath() { /usr/bin/cygpath.exe "$@"; }
 
+PREFIX="C:/${PREFIX_NAME}"
+PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
+
 if [ "$VERBOSE" = yes ]; then
     V=1; export V # Make
     DUNE_ARGS='--verbose'; export DUNE_ARGS
@@ -31,8 +34,6 @@ if [ "$VERBOSE" = yes ]; then
     env | sort
     set -o xtrace
 fi
-
-PREFIX="C:/${PREFIX_NAME}"
 
 build_ocaml() {
     download_file "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
@@ -68,4 +69,35 @@ build_ocaml() {
     cd .. || exit
 }
 
+build_opam() {
+    download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.zip" \
+                  "opam-${OPAM_VERSION}.zip"
+    unzip -oq "opam-$OPAM_VERSION.zip"
+
+    cd "opam-$OPAM_VERSION" || exit
+
+    # https://github.com/ocaml/opam/pull/4137
+    patch -p1 < "${ROOT_DIR}/0001-String_val-returns-const-char.patch"
+
+    # Update Dune to 1.11.4, https://github.com/ocaml/opam/pull/4122
+    download_file "https://github.com/ocaml/opam/pull/4122.diff" \
+                  "0001-update-dune-1-11-4.diff"
+    patch -p1 < "0001-update-dune-1-11-4.diff"
+
+    if [ "$PORT" = msvc64 ]; then
+        eval $(tools/msvs-promote-path)
+        ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
+    elif [ "$PORT" = mingw64 ]; then
+        ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-w64-mingw32
+    elif [ "$PORT" = cygwin ]; then
+        ./configure --prefix="$PREFIX"
+    fi
+
+    make lib-ext all -j1
+    make install
+
+    cd .. || exit
+}
+
 build_ocaml
+build_opam
