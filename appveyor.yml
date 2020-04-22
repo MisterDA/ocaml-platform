@@ -5,6 +5,7 @@ clone_depth: 1
 
 environment:
   global:
+    VERBOSE: yes
     CYG_ROOT: C:\cygwin64
     CYG_ARCH: x86_64
     CYG_CACHE: C:/cygwin64/var/cache/setup
@@ -39,7 +40,7 @@ for:
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
-      - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh" "-v"
+      - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
 
 
 

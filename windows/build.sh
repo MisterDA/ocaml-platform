@@ -15,20 +15,6 @@ if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(/bin/dirname "$0")"; fi
 
 if [ -z "${PREFIX_NAME-}" ]; then PREFIX_NAME='OCamlPlatform'; fi
 
-
-VERBOSE=no
-
-while getopts 'v' c; do
-    case "$c" in
-        v)  VERBOSE=yes
-            V=1; export V # Make
-            DUNE_ARGS='--verbose'; export DUNE_ARGS
-            OPAMVERBOSE=1; export OPAMVERBOSE ;;
-        *)  echo >&2 "Unsupported '$c' option."; help >&2; exit 1 ;;
-    esac
-done
-
-
 command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
 command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
 command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
@@ -39,19 +25,18 @@ download_file() { curl -SLfsC- "$1" -o "$2"; }
 cygpath() { /usr/bin/cygpath.exe "$@"; }
 
 if [ "$VERBOSE" = yes ]; then
+    V=1; export V # Make
+    DUNE_ARGS='--verbose'; export DUNE_ARGS
+    OPAMVERBOSE=1; export OPAMVERBOSE
     env | sort
     set -o xtrace
 fi
 
-
-# if [ "$PORT" = cygwin ]; then
-#     PREFIX="/opt/${PREFIX_NAME}"
-#     OPAMROOT="${PREFIX}/opam"; export OPAMROOT
-#     OCAMLLIB="${PREFIX}/lib/ocaml"; export OCAMLLIB
-#     CAML_LD_LIBRARY_PATH="${OCAMLLIB}/stublibs:${OCAMLLIB}"; export CAML_LD_LIBRARY_PATH
-# else [ "$PORT" = mingw64 ]; then
-#     PREFIX=
 PREFIX="C:/${PREFIX_NAME}"
+
+if [ "$PORT" = cygwin ]; then
+    PATH="$PWD/ocaml-${OCAML_VERSION}/flexdll:$PATH"; export PATH
+fi
 
 
 build_ocaml() {
@@ -77,7 +62,6 @@ build_ocaml() {
     fi
 
     make -j"$(nproc)" flexdll
-    make -j"$(nproc)" flexlink
     make -j"$(nproc)" world.opt
     make -j"$(nproc)" flexlink.opt
     make -j"$(nproc)" install
