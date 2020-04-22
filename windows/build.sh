@@ -49,6 +49,7 @@ build_ocaml() {
     patch -p1 < "${ROOT_DIR}/0001-flexdll-h-include-path.diff"
 
     if [ "$PORT" = msvc64 ]; then
+        cp tools/msvs-promote-path "$HOME/.msvs-promote-path"
         eval $(tools/msvs-promote-path)
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
     elif [ "$PORT" = mingw64 ]; then
@@ -85,7 +86,7 @@ build_opam() {
     patch -p1 < "0001-update-dune-1-11-4.diff"
 
     if [ "$PORT" = msvc64 ]; then
-        eval $(tools/msvs-promote-path)
+        eval "${HOME}/.msvs-promote-path"
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
     elif [ "$PORT" = mingw64 ]; then
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-w64-mingw32
