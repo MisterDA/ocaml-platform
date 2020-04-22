@@ -21,7 +21,7 @@ command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
 command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
-download_file() { curl -SLfsC- "$1" -o "$2"; }
+download_file() { curl -SLfs "$1" -o "$2"; }
 cygpath() { /usr/bin/cygpath.exe "$@"; }
 
 if [ "$VERBOSE" = yes ]; then
