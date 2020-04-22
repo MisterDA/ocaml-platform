@@ -37,7 +37,7 @@ for:
     install:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\cygwin.cmd"
     build_script:
-      - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s cygwin -B $BUILD -H $HOST"
+      - cmd: bash -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -v -s cygwin -B $BUILD -H $HOST"
   -
     matrix:
       only:
@@ -46,7 +46,7 @@ for:
     install:
       - cmd: call "%APPVEYOR_BUILD_FOLDER%\windows\msys2.cmd"
     build_script:
-      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/build.sh -v -s msys2 -B $BUILD -H $HOST"
+      - cmd: C:\msys64\usr\bin\bash.exe -lc "$APPVEYOR_BUILD_FOLDER/windows/build.sh -v -s msys2 -B $BUILD -H $HOST"
   -
     matrix:
       only:
