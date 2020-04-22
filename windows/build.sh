@@ -100,5 +100,31 @@ build_opam() {
     cd .. || exit
 }
 
+build_ocaml_platform() {
+    cd "$PREFIX" || exit
+
+    if [ "$PORT" = msvc64 ]; then
+        eval "${HOME}/.msvs-promote-path"
+    fi
+
+    OPAMROOT="$(cygpath -w "${PREFIX}/opam")"; export OPAMROOT
+    OPAMSWITCH=default; export OPAMSWITCH
+
+    opam init -a --disable-sandboxing -y "$OPAM_REPO"
+
+    eval $(opam env | sed 's/\r$//')
+    OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX;
+    CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH;
+    OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
+    MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
+    PATH="$(cygpath -p "$PATH")"; export PATH;
+
+    opam install -y --with-doc \
+         $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
+         ocaml-platform
+}
+
+
 build_ocaml
 build_opam
+build_ocaml_platform
