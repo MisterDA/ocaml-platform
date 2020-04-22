@@ -1,8 +1,79 @@
-#!/bin/sh
+#!/bin/bash
 
 set -eu
-set -o xtrace
 
-env | sort
+if [ -z "${OPAM_REPO-}" ]; then
+    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
+fi
 
-cl
+if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
+if [ -z "${OPAM_VERSION-}"  ]; then OPAM_VERSION=master; fi
+if [ -z "${FLEXDLL_VERSION-}" ]; then FLEXDLL_VERSION=master; fi
+
+if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
+if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
+
+if [ -z "${PREFIX-}" ]; then PREFIX='C:\OCamlPlatform'; fi
+
+
+VERBOSE=no
+
+while getopts 'v' c; do
+    case "$c" in
+        v)  VERBOSE=yes
+            V=1; export V # Make
+            DUNE_ARGS='--verbose'; export DUNE_ARGS
+            OPAMVERBOSE=1; export OPAMVERBOSE ;;
+        *)  echo >&2 "Unsupported '$c' option."; help >&2; exit 1 ;;
+    esac
+done
+
+
+command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
+command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
+command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
+command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
+command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
+
+download_file() { curl -SLfsC- "$1" -o "$2"; }
+cygpath() { /usr/bin/cygpath.exe "$@"; }
+
+if [ "$VERBOSE" = yes ]; then set -o xtrace; fi
+
+
+OPAMROOT="${PREFIX}\\opam"; export OPAMROOT
+OCAMLLIB="${PREFIX}\\lib\\ocaml"; export OCAMLLIB
+CAML_LD_LIBRARY_PATH="${OCAMLLIB}\\stublibs;${OCAMLLIB}"; export CAML_LD_LIBRARY_PATH
+
+
+build_ocaml() {
+    download_file "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
+                  "ocaml-${OCAML_VERSION}.tar.gz"
+    tar xf "ocaml-${OCAML_VERSION}.tar.gz"
+
+    download_file "https://github.com/alainfrisch/flexdll/archive/${FLEXDLL_VERSION}.tar.gz" \
+                  "flexdll-${FLEXDLL_VERSION}.tar.gz"
+    tar xf "flexdll-${FLEXDLL_VERSION}.tar.gz" -C "ocaml-${OCAML_VERSION}/flexdll/" --strip-components=1
+
+    cd "ocaml-${OCAML_VERSION}" || exit
+
+    patch -p1 < "${ROOT_DIR}/0001-flexdll-h-include-path.diff"
+
+    if [ "$PORT" = msvc64 ]; then
+        eval $(tools/msvs-promote-path)
+        ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
+    elif [ "$PORT" = mingw64 ]; then
+        ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-w64-mingw32
+    elif [ "$PORT" = cygwin ]; then
+        ./configure --prefix="$PREFIX"
+    fi
+
+    make -j"$(nproc)" flexdll
+    make -j"$(nproc)" world.opt
+    make -j"$(nproc)" flexlink.opt
+    make -j"$(nproc)" install
+
+    cd .. || exit
+}
+
+build_ocaml

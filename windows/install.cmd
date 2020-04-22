@@ -49,22 +49,3 @@ if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
-
-rem :CheckPackage
-rem "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %1" | findstr %1 > nul
-rem if %ERRORLEVEL% equ 1 (
-rem   echo Cygwin package %1 will be installed
-rem   set CYGWIN_INSTALL_PACKAGES=%CYGWIN_INSTALL_PACKAGES%,%1
-rem )
-rem goto :EOF
-
-rem :UpgradeCygwin
-rem if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_ROOT%\setup-x86_64.exe" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
-rem for %%P in (%CYGWIN_COMMANDS%) do "%CYG_ROOT%\bin\%%P.exe" --version > nul 2>&1 || "%CYG_ROOT%\bin\%%P.exe" -v > nul 2>&1 || set CYGWIN_UPGRADE_REQUIRED=1
-rem "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
-rem if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
-rem   echo Cygwin package upgrade required - please go and drink coffee
-rem   "%CYG_ROOT%\setup-x86_64.exe" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
-rem   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
-rem )
-rem goto :EOF
