@@ -11,9 +11,9 @@ if [ -z "${OPAM_VERSION-}"  ]; then OPAM_VERSION=master; fi
 if [ -z "${FLEXDLL_VERSION-}" ]; then FLEXDLL_VERSION=master; fi
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
-if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
+if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(/bin/dirname "$0")"; fi
 
-if [ -z "${PREFIX-}" ]; then PREFIX='C:\OCamlPlatform'; fi
+if [ -z "${PREFIX_NAME-}" ]; then PREFIX_NAME='OCamlPlatform'; fi
 
 
 VERBOSE=no
@@ -38,12 +38,20 @@ command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 download_file() { curl -SLfsC- "$1" -o "$2"; }
 cygpath() { /usr/bin/cygpath.exe "$@"; }
 
-if [ "$VERBOSE" = yes ]; then set -o xtrace; fi
+if [ "$VERBOSE" = yes ]; then
+    env | sort
+    set -o xtrace
+fi
 
 
-OPAMROOT="${PREFIX}\\opam"; export OPAMROOT
-OCAMLLIB="${PREFIX}\\lib\\ocaml"; export OCAMLLIB
-CAML_LD_LIBRARY_PATH="${OCAMLLIB}\\stublibs;${OCAMLLIB}"; export CAML_LD_LIBRARY_PATH
+# if [ "$PORT" = cygwin ]; then
+#     PREFIX="/opt/${PREFIX_NAME}"
+#     OPAMROOT="${PREFIX}/opam"; export OPAMROOT
+#     OCAMLLIB="${PREFIX}/lib/ocaml"; export OCAMLLIB
+#     CAML_LD_LIBRARY_PATH="${OCAMLLIB}/stublibs:${OCAMLLIB}"; export CAML_LD_LIBRARY_PATH
+# else [ "$PORT" = mingw64 ]; then
+#     PREFIX=
+PREFIX="C:/${PREFIX_NAME}"
 
 
 build_ocaml() {
@@ -69,6 +77,7 @@ build_ocaml() {
     fi
 
     make -j"$(nproc)" flexdll
+    make -j"$(nproc)" flexlink
     make -j"$(nproc)" world.opt
     make -j"$(nproc)" flexlink.opt
     make -j"$(nproc)" install

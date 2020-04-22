@@ -39,7 +39,7 @@ for:
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
-      - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
+      - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh" "-v"
 
 
 
