@@ -8,14 +8,14 @@ environment:
     VERBOSE: yes
     OCAML_PLATFORM_NAME: OCamlPlatform
   matrix:
-    - PORT: msvc64
-      WINDOWS: 1
     - PORT: mingw64
-      WINDOWS: 1
-    - PORT: cygwin
       WINDOWS: 1
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - APPVEYOR_BUILD_WORKER_IMAGE: macOS
+    - PORT: msvc64
+      WINDOWS: 1
+    - PORT: cygwin
+      WINDOWS: 1
 
 for:
   -
