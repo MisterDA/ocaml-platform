@@ -93,12 +93,9 @@ Updating
 
 If you installed the OCaml Platform through your distribution, you
 should wait for the update to be available via your distribution.
-Otherwise, if you used an installer, update the OCaml Platform by
-running in a terminal:
-
-.. code:: shell
-
-   ocaml-platform-update.sh
+Otherwise, updating the OCaml Platform a matter of deleting the old
+installation and replacing it with the new installation. Simply re-run
+the automatic installer for your system.
 
 Distributing your program
 ~~~~~~~~~~~~~~~~~~~~~~~~~
