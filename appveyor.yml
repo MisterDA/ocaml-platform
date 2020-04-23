@@ -6,10 +6,6 @@ clone_depth: 1
 environment:
   global:
     VERBOSE: yes
-    CYG_ROOT: C:\cygwin64
-    CYG_ARCH: x86_64
-    CYG_CACHE: C:/cygwin64/var/cache/setup
-    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
   matrix:
     - PORT: msvc64
       WINDOWS: 1

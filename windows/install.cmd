@@ -1,6 +1,11 @@
 @rem Do not call setlocal!
 @echo off
 
+set CYG_ROOT=C:\cygwin64
+set CYG_ARCH=x86_64
+set CYG_CACHE=C:/cygwin64/var/cache/setup
+set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
+
 rem CYGWIN_PACKAGES is the list of required Cygwin packages (cygwin is included
 rem in the list just so that the Cygwin version is always displayed on the log).
 rem CYGWIN_COMMANDS is a corresponding command to run with --version to test
