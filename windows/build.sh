@@ -2,6 +2,8 @@
 
 set -eu
 
+if [ -z "${PREFIX_NAME-}" ]; then PREFIX_NAME='OCamlPlatform'; fi
+
 if [ -z "${OPAM_REPO-}" ]; then
     OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
@@ -13,7 +15,7 @@ if [ -z "${FLEXDLL_VERSION-}" ]; then FLEXDLL_VERSION=master; fi
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(/bin/dirname "$0")"; fi
 
-if [ -z "${PREFIX_NAME-}" ]; then PREFIX_NAME='OCamlPlatform'; fi
+if [ -z "${VERBOSE-}" ]; then VERBOSE=no; fi
 
 command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
 command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
