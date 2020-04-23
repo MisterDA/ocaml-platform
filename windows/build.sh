@@ -3,7 +3,7 @@
 set -eu
 
 if [ -z "${OPAM_REPO-}" ]; then
-    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
+    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
 
 if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
