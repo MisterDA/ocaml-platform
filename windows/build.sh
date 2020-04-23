@@ -109,7 +109,7 @@ build_ocaml_platform() {
     OPAMROOT="$(cygpath -w "${PREFIX}/opam")"; export OPAMROOT
     OPAMSWITCH=default; export OPAMSWITCH
 
-    opam init -a --disable-sandboxing -y -c "ocaml-base-compiler.$OCAML_VERSION" "$OPAM_REPO"
+    opam init -a --disable-sandboxing -y "$OPAM_REPO"
 
     cygpath() { /usr/bin/cygpath.exe "$@"; }
     eval $(opam env | sed 's/\r$//')
