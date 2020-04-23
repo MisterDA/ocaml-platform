@@ -6,6 +6,7 @@ clone_depth: 1
 environment:
   global:
     VERBOSE: yes
+    OCAML_PLATFORM_NAME: OCamlPlatform
   matrix:
     - PORT: msvc64
       WINDOWS: 1

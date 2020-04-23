@@ -2,8 +2,6 @@
 
 set -eu
 
-if [ -z "${PREFIX_NAME-}" ]; then PREFIX_NAME='OCamlPlatform'; fi
-
 if [ -z "${OPAM_REPO-}" ]; then
     OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
@@ -25,7 +23,7 @@ command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
 download_file() { curl -SLfs "$1" -o "$2"; }
 
-PREFIX="C:/${PREFIX_NAME}"
+PREFIX="$(cypath -m "${CYG_ROOT}")/opt/${OCAML_PLATFORM_NAME}"
 PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
 
 if [ "$VERBOSE" = yes ]; then
