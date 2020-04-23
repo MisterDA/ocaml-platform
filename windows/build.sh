@@ -22,7 +22,6 @@ command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
 download_file() { curl -SLfs "$1" -o "$2"; }
-cygpath() { /usr/bin/cygpath.exe "$@"; }
 
 PREFIX="C:/${PREFIX_NAME}"
 PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
@@ -110,8 +109,9 @@ build_ocaml_platform() {
     OPAMROOT="$(cygpath -w "${PREFIX}/opam")"; export OPAMROOT
     OPAMSWITCH=default; export OPAMSWITCH
 
-    opam init -a --disable-sandboxing -y "$OPAM_REPO"
+    opam init -a --disable-sandboxing -y -c "ocaml-base-compiler.$OCAML_VERSION" "$OPAM_REPO"
 
+    cygpath() { /usr/bin/cygpath.exe "$@"; }
     eval $(opam env | sed 's/\r$//')
     OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX
     CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH
@@ -127,7 +127,6 @@ build_ocaml_platform() {
          $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
          ocaml-platform
 }
-
 
 build_ocaml
 build_opam
