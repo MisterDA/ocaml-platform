@@ -71,12 +71,15 @@ Manual installation from source
    and extract the OCaml Platform repository, then ``cd`` into the
    extracted folder.
 
-4. Run the following commands:
+4. Setup Cygwin to host the platform port:
 
    .. code:: cmd
 
       call windows\install.cmd
-      call "%CYG_ROOT%\bin\bash.exe" "-lc" "windows/build.sh"
+
+5. Wait until Cygwin's install has finished, then run:
+
+      call "%CYG_ROOT%\bin\bash.exe" "-lc" "$(cygpath -m '%CD%')/windows/build.sh"
 
 macOS
 ~~~~~
