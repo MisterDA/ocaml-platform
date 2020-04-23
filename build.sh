@@ -80,11 +80,6 @@ build_opam() {
     # https://github.com/ocaml/opam/pull/4137
     patch -p1 < "${ROOT_DIR}/windows/0001-String_val-returns-const-char.patch"
 
-    # Update Dune to 1.11.4, https://github.com/ocaml/opam/pull/4122
-    download_file "https://github.com/ocaml/opam/pull/4122.diff" \
-                  "0001-update-dune-1-11-4.diff"
-    patch -p1 < "0001-update-dune-1-11-4.diff"
-
     ./configure --prefix="$PREFIX"
 
     make lib-ext all -j1
