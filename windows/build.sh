@@ -23,7 +23,7 @@ command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
 download_file() { curl -SLfs "$1" -o "$2"; }
 
-PREFIX="$(cypath -m "${CYG_ROOT}")/opt/${OCAML_PLATFORM_NAME}"
+PREFIX="$(cygpath -m "${CYG_ROOT}")/opt/${OCAML_PLATFORM_NAME}"
 PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
 
 if [ "$VERBOSE" = yes ]; then
