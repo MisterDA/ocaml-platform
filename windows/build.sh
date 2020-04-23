@@ -86,7 +86,7 @@ build_opam() {
     patch -p1 < "0001-update-dune-1-11-4.diff"
 
     if [ "$PORT" = msvc64 ]; then
-        eval "${HOME}/.msvs-promote-path"
+        eval $("${HOME}/.msvs-promote-path")
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
     elif [ "$PORT" = mingw64 ]; then
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-w64-mingw32
@@ -104,7 +104,7 @@ build_ocaml_platform() {
     cd "$PREFIX" || exit
 
     if [ "$PORT" = msvc64 ]; then
-        eval "${HOME}/.msvs-promote-path"
+        eval $("${HOME}/.msvs-promote-path")
     fi
 
     OPAMROOT="$(cygpath -w "${PREFIX}/opam")"; export OPAMROOT
@@ -113,11 +113,15 @@ build_ocaml_platform() {
     opam init -a --disable-sandboxing -y "$OPAM_REPO"
 
     eval $(opam env | sed 's/\r$//')
-    OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX;
-    CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH;
-    OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH;
-    MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH;
-    PATH="$(cygpath -p "$PATH")"; export PATH;
+    OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX
+    CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH
+    OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH
+    MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH
+    PATH="$(cygpath -p "$PATH")"; export PATH
+
+    if [ "$PORT" = msvc64 ]; then
+        eval $("${HOME}/.msvs-promote-path")
+    fi
 
     opam install -y --with-doc \
          $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
