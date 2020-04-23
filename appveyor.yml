@@ -11,10 +11,10 @@ environment:
       WINDOWS: 1
     - PORT: mingw64
       WINDOWS: 1
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     - PORT: cygwin
       WINDOWS: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
 
 for:
   -
@@ -22,13 +22,13 @@ for:
       only:
         - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     build_script:
-      - $APPVEYOR_BUILD_FOLDER/build.sh -v -s linux
+      - $APPVEYOR_BUILD_FOLDER/build.sh -s linux
   -
     matrix:
       only:
         - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     build_script:
-      - $APPVEYOR_BUILD_FOLDER/build.sh -v -s macos
+      - $APPVEYOR_BUILD_FOLDER/build.sh -s macos
   -
     matrix:
       only:
@@ -37,8 +37,6 @@ for:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
       - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
-
-
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
