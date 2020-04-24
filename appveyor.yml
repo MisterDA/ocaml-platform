@@ -24,12 +24,16 @@ for:
         - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     build_script:
       - $APPVEYOR_BUILD_FOLDER/build.sh -s linux
+    artifacts:
+      - path: "$PREFIX"
   -
     matrix:
       only:
         - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     build_script:
       - $APPVEYOR_BUILD_FOLDER/build.sh -s macos
+    artifacts:
+      - path: "$PREFIX"
   -
     matrix:
       only:
@@ -42,6 +46,8 @@ for:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
       - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
+    artifacts:
+      - path: '%CYG_PREFIX'
 
 cache:
   - '%APPDATA%\cygwin'
