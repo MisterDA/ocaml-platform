@@ -36,7 +36,7 @@ for:
         - WINDOWS: yes
     environment:
       CYG_ROOT: C:\cygwin64
-      CYG_CACHE: %LOCALAPPDATA%\cygwin64
+      CYG_CACHE: "%LOCALAPPDATA%\cygwin"
       CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
