@@ -36,13 +36,13 @@ while getopts 's:' c; do
 done
 
 if [ "$HOST_SYSTEM" = linux ]; then
-    PREFIX="/opt/$PREFIX_NAME"
+    if [ -z "${PREFIX-}" ]; then PREFIX="/opt/$PREFIX_NAME"; export PREFIX; fi
     PATH="$PREFIX/bin:$PATH"; export PATH
 
     sudo mkdir -p "$PREFIX"
     sudo chown -R "$(id -u):$(id -g)" "$PREFIX"
 elif [ "$HOST_SYSTEM" = macos ]; then
-    PREFIX="/Applications/$PREFIX_NAME"
+    if [ -z "${PREFIX-}" ]; then PREFIX="/Applications/$PREFIX_NAME"; export PREFIX; fi
     PATH="$PREFIX/bin:$PATH"; export PATH
 
     mkdir -p "$PREFIX"
