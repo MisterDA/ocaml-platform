@@ -1,10 +1,7 @@
 @rem Do not call setlocal!
-@echo off
+if not "%VERBOSE%" equ "yes" @echo off
 
-set CYG_ROOT=C:\%OCAML_PLATFORM_NAME%
 set CYG_ARCH=x86_64
-set CYG_CACHE=C:/cygwin/var/cache/setup
-set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
 
 rem CYGWIN_PACKAGES is the list of required Cygwin packages (cygwin is included
 rem in the list just so that the Cygwin version is always displayed on the log).

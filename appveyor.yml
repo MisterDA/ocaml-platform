@@ -7,19 +7,15 @@ environment:
   global:
     VERBOSE: yes
     OCAML_PLATFORM_NAME: OCamlPlatform
-    CYG_ROOT: C:\%OCAML_PLATFORM_NAME%
-    CYG_ARCH: x86_64
-    CYG_CACHE: C:/cygwin/var/cache/setup
-    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
   matrix:
     - PORT: mingw64
-      WINDOWS: 1
+      WINDOWS: yes
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     - PORT: msvc64
-      WINDOWS: 1
+      WINDOWS: yes
     - PORT: cygwin
-      WINDOWS: 1
+      WINDOWS: yes
 
 for:
   -
@@ -37,9 +33,12 @@ for:
   -
     matrix:
       only:
-        - WINDOWS: 1
+        - WINDOWS: yes
+    environment:
+      CYG_ROOT: C:\cygwin64
+      CYG_CACHE: %LOCALAPPDATA%\cygwin64
+      CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
     install:
-      - cmd: if not "%CYG_ROOT%" equ "C:\cygwin64" move "C:\cygwin64" "%CYG_ROOT%"
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
       - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"

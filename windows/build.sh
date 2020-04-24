@@ -10,6 +10,9 @@ if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
 if [ -z "${OPAM_VERSION-}"  ]; then OPAM_VERSION=master; fi
 if [ -z "${FLEXDLL_VERSION-}" ]; then FLEXDLL_VERSION=master; fi
 
+if [ -z "${CYG_PREFIX-}" ]; then CYG_PREFIX="C:/${OCAML_PLATFORM_NAME}"; fi
+if [ -z "${PREFIX-}" ]; then PREFIX="/opt/${OCAML_PLATFORM_NAME}"; fi
+
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(/bin/dirname "$0")"; fi
 
@@ -23,7 +26,7 @@ command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
 download_file() { curl -SLfs "$1" -o "$2"; }
 
-PREFIX="$(cygpath -m "${CYG_ROOT}")/opt/${OCAML_PLATFORM_NAME}"
+PREFIX="$(cygpath -m "${CYG_PREFIX}${PREFIX}")"; export PREFIX
 PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
 
 if [ "$VERBOSE" = yes ]; then
