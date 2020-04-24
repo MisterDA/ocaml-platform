@@ -36,12 +36,15 @@ for:
         - WINDOWS: yes
     environment:
       CYG_ROOT: C:\cygwin64
-      CYG_CACHE: "$LOCALAPPDATA\cygwin"
+      CYG_CACHE: '%APPDATA%\cygwin'
       CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
       - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
+
+cache:
+  - '%APPDATA%\cygwin'
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
