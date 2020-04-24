@@ -91,7 +91,7 @@ build_opam() {
 build_ocaml_platform() {
     cd "$PREFIX" || exit
 
-    OPAMROOT="$(cygpath -w "${PREFIX}/opam")"; export OPAMROOT
+    OPAMROOT="${PREFIX}/opam"; export OPAMROOT
     OPAMSWITCH=default; export OPAMSWITCH
 
     opam init -a --disable-sandboxing -y "$OPAM_REPO"
