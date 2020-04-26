@@ -7,6 +7,7 @@ environment:
   global:
     VERBOSE: yes
     OCAML_PLATFORM_NAME: OCamlPlatform
+    ARTIFACTS: yes
   matrix:
     - PORT: mingw64
       WINDOWS: yes

@@ -126,6 +126,20 @@ build_ocaml_platform() {
          ocaml-platform
 }
 
+artifacts() {
+    if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
+
+    cd "$PREFIX" || exit
+    cd ..
+    local archive="$(/bin/basename "$PREFIX")"
+    tar czf "${OCAML_PLATFORM_NAME}.tar.gz" "${archive}"
+
+    if [ "${APPVEYOR-}" = True ]; then
+        appveyor PushArtifact "${OCAML_PLATFORM_NAME}.tar.gz"
+    fi
+}
+
 build_ocaml
 build_opam
 build_ocaml_platform
+artifacts
