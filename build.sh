@@ -8,7 +8,7 @@ if [ -z "${OPAM_REPO-}" ]; then
     OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
 fi
 
-if [ -z "${OCAML_VERSION-}"   ]; then OCAML_VERSION=4.10.0; fi
+if [ -z "${OCAML_VERSION-}"   ]; then OCAML_VERSION=trunk; fi
 if [ -z "${OPAM_VERSION-}"    ]; then OPAM_VERSION=master;  fi
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
@@ -110,7 +110,7 @@ artifacts() {
     local archive="$(basename "$PREFIX")"
     tar czf "${OCAML_PLATFORM_NAME}.tar.gz" "${archive}"
 
-    if [ "${APPVEYOR-}" = True ]; then
+    if [ "${APPVEYOR-}" = True || "${APPVEYOR-}" = true ]; then
         appveyor PushArtifact "${OCAML_PLATFORM_NAME}.tar.gz"
     fi
 }
