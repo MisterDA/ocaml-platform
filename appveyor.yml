@@ -6,8 +6,10 @@ clone_depth: 1
 environment:
   global:
     VERBOSE: yes
-    OCAML_PLATFORM_NAME: OCamlPlatform
     ARTIFACTS: yes
+    OCAML_PLATFORM_NAME: OCamlPlatform
+    OCAML_VERSION: 4.10.0
+    OPAM_VERSION: 2.1.0-alpha
   matrix:
     - PORT: mingw64
       WINDOWS: yes
