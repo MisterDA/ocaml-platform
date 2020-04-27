@@ -43,9 +43,8 @@ for:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
     build_script:
       - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
-
-cache:
-  - '%APPDATA%\cygwin'
+    cache:
+      - '%CYG_CACHE%'
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
