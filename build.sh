@@ -77,9 +77,6 @@ build_opam() {
 
     cd "opam-$OPAM_VERSION" || exit
 
-    # https://github.com/ocaml/opam/pull/4137
-    patch -p1 < "${ROOT_DIR}/windows/0001-String_val-returns-const-char.patch"
-
     ./configure --prefix="$PREFIX"
 
     make lib-ext all -j1
