@@ -20,7 +20,6 @@ command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
 command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
 command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
 command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
-command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
 download_file() { curl -SLfsC- "$1" -o "$2"; }
 
@@ -71,9 +70,9 @@ build_ocaml() {
 }
 
 build_opam() {
-    download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.zip" \
-                  "opam-${OPAM_VERSION}.zip"
-    unzip "opam-$OPAM_VERSION.zip"
+    download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" \
+                  "opam-${OPAM_VERSION}.tar.gz"
+    tar xf "opam-${OPAM_VERSION}.tar.gz"
 
     cd "opam-$OPAM_VERSION" || exit
 
