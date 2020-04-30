@@ -1,11 +1,16 @@
 OCaml Platform
 ==============
 
+.. image:: https://ci.appveyor.com/api/projects/status/ipf529j5j0vwy5q7?svg=true
+  :target: https://ci.appveyor.com/project/MisterDA/ocaml-platform
+  :alt: Build status
+
 OCaml Platform is a distribution of the `OCaml <https://ocaml.org/>`__
-compiler and runtime, the `OCaml <https://opam.ocaml.org/>`__ Package
-Manager, and a set of curated `OCaml
-packages <./ocaml-platform.opam>`__, easily installable on multiple
-platforms.
+compiler and runtime, `Opam <https://opam.ocaml.org/>`__ (OCaml
+Package Manager), and a set of curated `OCaml packages
+<./ocaml-platform.opam>`__, easily installable on multiple platforms.
+
+.. contents::
 
 Installation
 ------------
@@ -26,9 +31,70 @@ into ``/opt/ocaml-platform`` and updates your shell.
 Windows
 ~~~~~~~
 
+Installers
+++++++++++
+
 Download and run our installer for Windows x86_64.
 
 *Coming soon!*
+
+
+Build from source
++++++++++++++++++
+
+This procedure requires an Internet connection. In a Windows system,
+download `Cygwin <https://www.cygwin.com/setup-x86_64.exe>`__.
+`Download this repository
+<https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__ and
+extract it in the same location. Open a ``cmd.exe``, and ``cd`` where
+``setup-x86_64.exe`` was downloaded. Then tune the environment
+variables to your liking:
+
+.. code:: cmd
+
+   set VERBOSE=yes
+   set OCAML_PLATFORM_NAME=OCamlPlatform
+   
+   @rem Any git ref will work
+   @rem To select a custom repo, edit the URLs in windows/build.sh
+   set OCAML_VERSION=4.10.0
+   set OPAM_VERSION=2.1.0-alpha
+   
+   @rem Choose between cygwin mingw64 msvc64
+   set PORT=mingw64
+   
+   @rem Configure Cygwin
+   set CYG_ROOT=C:\cygwin64
+   set CYG_CACHE=%APPDATA%\cygwin
+   set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
+   
+   @rem Install Cygwin base
+   setup-x86_64.exe --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
+       --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
+       --local-package-dir "%CYG_CACHE%"
+
+Wait for the install to finish, and run:
+
+.. code:: cmd
+
+   move setup-x86_64.exe %CYG_ROOT%
+   call ocaml-platform-master\windows\install.cmd
+
+Wait for the install to finish, and run:
+
+.. code:: cmd
+
+   %CYG_ROOT%\bin\mintty.exe -
+
+In the new terminal, run:
+
+.. code:: sh
+
+   curl -L https://github.com/MisterDA/ocaml-platform/archive/master.tar.gz -o ocaml-platform.tar.gz
+   tar xf ocaml-platform.tar.gz
+
+   # an absolute path is required
+   "${PWD}/ocaml-platform-master/windows/build.sh"
 
 macOS
 ~~~~~
@@ -41,74 +107,3 @@ The following script installs the OCaml Platform into
    sh -c "$(curl -sSL 'https://raw.githubusercontent.com/MisterDA/ocaml-platform/master/macos/installer.sh')"
 
 *Coming soon!*
-
-Getting started
----------------
-
-The installer should have automatically set up your environment to work
-with the OCaml Platform. Open a terminal, and try the OCaml toplevel:
-
-::
-
-   $ ocaml
-           OCaml version 4.10.0
-
-   # print_endline "Hello, world!";;
-   Hello, world!
-   - : unit = ()
-
-We’ll now start a minimal OCaml project, using the
-`Dune <https://dune.build/>`__ build system and the
-`LWT <https://ocsigen.org/lwt/>`__ library. The ``dune`` file describes
-how to build the project, and the ``hello_world.ml`` file contains the
-program.
-
--  **``dune``**
-
-   .. code:: dune
-
-      (executable
-        (name hello_world)
-        (libraries lwt.unix))
-
--  **``hello_world.ml``**
-
-   .. code:: ocaml
-
-      Lwt_main.run (Lwt_io.printf "Hello, world!\n")
-
-Now, run in your shell:
-
-::
-
-   $ dune build hello_world.exe
-   $ ./_build/default/hello_world.exe
-   sHello, world!
-
-The OCaml Platform comes bundled with a wide, curated set of excellent
-OCaml libraries. `Take a look! <./ocaml-platform.opam>`__
-
-Updating
-~~~~~~~~
-
-If you installed the OCaml Platform through your distribution, you
-should wait for the update to be available via your distribution.
-Otherwise, updating the OCaml Platform a matter of deleting the old
-installation and replacing it with the new installation. Simply re-run
-the automatic installer for your system.
-
-Distributing your program
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-With [Duniverse][duniverse]. *Coming soon!*
-
-For the OCaml developper
-------------------------
-
-Using the OCaml Platform for your projects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The OCaml Platform provides a wide set of packages and garantees that it
-is portable, well-integrated to the host system, and that the bundled
-packages interact well with each other, without conflicts. It is a good,
-stable base, for developping and distributing OCaml programs.
