@@ -41,8 +41,7 @@ WORKDIR "$PREFIX"
 RUN opam init -vvv -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPO"
-RUN eval $(opam env) && \
-    opam install -vvv -y --with-doc \
+RUN opam exec -- opam install -vvv -y --with-doc \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
 
@@ -55,7 +54,6 @@ WORKDIR "$PREFIX"
 RUN opam init -vvv -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPO"
-RUN eval $(opam env) && \
-    opam install -vvv -y --with-test \
+RUN opam exec -- opam install -vvv -y --with-test \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform

@@ -87,8 +87,7 @@ build_ocaml_platform() {
     opam init -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPO"
-    eval $(opam env)
-    opam install -vvv -y --with-doc \
+    opam exec -- opam install -y --with-doc \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
 }
