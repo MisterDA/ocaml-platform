@@ -11,10 +11,12 @@ environment:
     OCAML_VERSION: 4.10.0
     OPAM_VERSION: 2.1.0-alpha
   matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+      DOCKER: yes
+    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     - PORT: mingw64
       WINDOWS: yes
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     - PORT: msvc64
       WINDOWS: yes
     - PORT: cygwin
@@ -33,6 +35,11 @@ for:
         - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     build_script:
       - $APPVEYOR_BUILD_FOLDER/build.sh -s macos
+  -
+    matrix:
+      only:
+        - DOCKER: yes
+    build_script: docker build --build-arg=OCAML_VERSION=$OCAML_VERSION --build-arg=OPAM_VERSION=$OCAML_VERSION -f "$APPVEYOR_BUILD_FOLDER/linux/Dockerfile" "$APPVEYOR_BUILD_FOLDER/linux"
   -
     matrix:
       only:

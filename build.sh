@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -eu
 
@@ -8,8 +8,8 @@ if [ -z "${OPAM_REPO-}" ]; then
     OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
 fi
 
-if [ -z "${OCAML_VERSION-}"   ]; then OCAML_VERSION=trunk; fi
-if [ -z "${OPAM_VERSION-}"    ]; then OPAM_VERSION=master;  fi
+if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
+if [ -z "${OPAM_VERSION-}"  ]; then OPAM_VERSION=master;  fi
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
@@ -18,10 +18,12 @@ if [ -z "${VERBOSE-}" ]; then VERBOSE=no; fi
 
 command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
 command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
+command -v m4    >/dev/null 2>&1 || { echo >&2 "m4 is missing.";  exit 1; }
 command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
 command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
+command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
-download_file() { curl -SLfsC- "$1" -o "$2"; }
+download_file() { curl -SLfs "$1" -o "$2"; }
 
 while getopts 's:' c; do
     case $c in
@@ -34,84 +36,75 @@ while getopts 's:' c; do
     esac
 done
 
-if [ "$HOST_SYSTEM" = linux ]; then
-    if [ -z "${PREFIX-}" ]; then PREFIX="/opt/$PREFIX_NAME"; export PREFIX; fi
+environment() {
+    if [ "$VERBOSE" = yes ]; then
+        V=1; export V # Make
+        DUNE_ARGS='--verbose'; export DUNE_ARGS
+        OPAMVERBOSE=3; export OPAMVERBOSE
+        env | sort
+        set -o xtrace
+    fi
+
+    if [ "$HOST_SYSTEM" = linux ]; then
+        if [ -z "${PREFIX-}" ]; then PREFIX="/opt/$PREFIX_NAME"; export PREFIX; fi
+    elif [ "$HOST_SYSTEM" = macos ]; then
+        if [ -z "${PREFIX-}" ]; then PREFIX="/Applications/$PREFIX_NAME"; export PREFIX; fi
+    fi
+
+    if [ "$HOST_SYSTEM" = linux ] || [ "$HOST_SYSTEM" = macos ]; then
+        if [ -e "$PREFIX" ]; then
+            echo >&2 "$PREFIX already exists."
+            exit 1
+        fi
+
+        if [ ! -w "$(dirname "$PREFIX")" ]; then
+            sudo mkdir -p "$PREFIX"
+            sudo chown -R "$(id -u):$(id -g)" "$PREFIX"
+        else
+            mkdir -p "$PREFIX"
+        fi
+    fi
+
     PATH="$PREFIX/bin:$PATH"; export PATH
-
-    sudo mkdir -p "$PREFIX"
-    sudo chown -R "$(id -u):$(id -g)" "$PREFIX"
-elif [ "$HOST_SYSTEM" = macos ]; then
-    if [ -z "${PREFIX-}" ]; then PREFIX="/Applications/$PREFIX_NAME"; export PREFIX; fi
-    PATH="$PREFIX/bin:$PATH"; export PATH
-
-    mkdir -p "$PREFIX"
-fi
-
-if [ "$VERBOSE" = yes ]; then
-    V=1; export V # Make
-    DUNE_ARGS='--verbose'; export DUNE_ARGS
-    OPAMVERBOSE=3; export OPAMVERBOSE
-    env | sort
-    set -o xtrace
-fi
-
-build_ocaml() {
-    download_file "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
-                  "ocaml-${OCAML_VERSION}.tar.gz"
-    tar xf "ocaml-${OCAML_VERSION}.tar.gz"
-
-    cd "ocaml-${OCAML_VERSION}" || exit
-
-    ./configure --prefix="$PREFIX"
-    make -j"$(nproc)" world.opt
-    make -j"$(nproc)" install
-
-    cd .. || exit
 }
 
-build_opam() {
+bootstrap_opam() {
     download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" \
                   "opam-${OPAM_VERSION}.tar.gz"
     tar xf "opam-${OPAM_VERSION}.tar.gz"
 
     cd "opam-$OPAM_VERSION" || exit
 
-    ./configure --prefix="$PREFIX"
-
-    make lib-ext all -j1
-    make install
-
-    cd .. || exit
+    make cold CONFIGURE_ARGS="--prefix $PREFIX"
+    make cold-install -j"$(nproc)"
 }
 
 build_ocaml_platform() {
     cd "$PREFIX" || exit
 
     OPAMROOT="${PREFIX}/opam"; export OPAMROOT
-    OPAMSWITCH=default; export OPAMSWITCH
 
-    opam init -a --disable-sandboxing -y "$OPAM_REPO"
-
+    opam init -y -a --disable-sandboxing \
+        -c "ocaml-base-compiler.${OCAML_VERSION}" \
+        "$OPAM_REPO"
     eval $(opam env)
-    opam install -y --with-doc \
-         $(opam list --required-by ocaml-platform --columns=package -s) \
-         ocaml-platform
+    opam install -vvv -y --with-doc \
+        $(opam list --required-by ocaml-platform --columns=package -s) \
+        ocaml-platform
 }
 
 artifacts() {
     if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
 
-    cd "$PREFIX" || exit
-    cd ..
-    local archive="$(basename "$PREFIX")"
-    tar czf "${OCAML_PLATFORM_NAME}.tar.gz" "${archive}"
+    cd "$BUILDDIR" || exit
+    tar czf "${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
 
-    if [ "${APPVEYOR-}" = True || "${APPVEYOR-}" = true ]; then
+    if [ "${APPVEYOR-}" = True ] || [ "${APPVEYOR-}" = true ]; then
         appveyor PushArtifact "${OCAML_PLATFORM_NAME}.tar.gz"
     fi
 }
 
-build_ocaml
-build_opam
+environment
+bootstrap_opam
 build_ocaml_platform
 artifacts
