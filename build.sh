@@ -40,7 +40,7 @@ environment() {
     if [ "$VERBOSE" = yes ]; then
         V=1; export V # Make
         DUNE_ARGS='--verbose'; export DUNE_ARGS
-        OPAMVERBOSE=3; export OPAMVERBOSE
+        OPAMVERBOSE=2; export OPAMVERBOSE
         env | sort
         set -o xtrace
     fi
