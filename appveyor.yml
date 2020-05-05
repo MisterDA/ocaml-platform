@@ -9,7 +9,7 @@ environment:
     ARTIFACTS: yes
     OCAML_PLATFORM_NAME: OCamlPlatform
     OCAML_VERSION: 4.10.0
-    OPAM_VERSION: 2.1.0-alpha
+    OPAM_VERSION: 3def1a6d1ff102aaa608f5e9170783b96f55069d
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
