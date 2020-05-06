@@ -33,7 +33,7 @@ if [ "$VERBOSE" = yes ]; then
     DUNE_ARGS='--verbose'; export DUNE_ARGS
     OPAMVERBOSE=1; export OPAMVERBOSE
     env | sort
-    set -o xtrace
+    # set -o xtrace
 fi
 
 build_ocaml() {

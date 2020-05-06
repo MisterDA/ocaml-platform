@@ -42,7 +42,7 @@ environment() {
         DUNE_ARGS='--verbose'; export DUNE_ARGS
         OPAMVERBOSE=1; export OPAMVERBOSE
         env | sort
-        set -o xtrace
+        # set -o xtrace
     fi
 
     if [ "$HOST_SYSTEM" = linux ]; then
