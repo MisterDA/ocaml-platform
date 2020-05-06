@@ -12,7 +12,6 @@ if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
 if [ -z "${OPAM_VERSION-}"  ]; then OPAM_VERSION=master;  fi
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
-if [ -z "${ROOT_DIR-}" ]; then ROOT_DIR="$(dirname "$0")"; fi
 
 if [ -z "${VERBOSE-}" ]; then VERBOSE=no; fi
 
