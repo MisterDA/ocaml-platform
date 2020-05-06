@@ -16,6 +16,9 @@ jobs:
         - docker
       script:
         - docker build --build-arg=OCAML_VERSION=$OCAML_VERSION --build-arg=OPAM_VERSION=$OPAM_VERSION -f "linux/Dockerfile" "linux/"
+    - os: linux
+      dist: bionic
+      script:
         - build.sh -s linux
       cache:
         directories:
