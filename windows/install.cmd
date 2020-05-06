@@ -27,6 +27,24 @@ goto %1
 
 goto :EOF
 
+:all
+
+if "%CYG_ARCH%"   neq "" set CYG_ARCH=x86_64
+if "%CYG_ROOT%"   neq "" set CYG_ROOT=C:\cygwin64
+if "%CYG_CACHE%"  neq "" set CYG_CACHE="%APPDATA%\cygwin"
+if "%CYG_MIRROR%" neq "" set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
+
+set CYG_SETUP="%CD%\setup-%CYG_ARCH%.exe"
+
+"%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
+              --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
+              --local-package-dir "%CYG_CACHE%"
+
+call :install
+call :pre_build
+
+goto :EOF
+
 :CheckPackage
 "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %1" | findstr %1 > nul
 if %ERRORLEVEL% equ 1 (
@@ -36,12 +54,12 @@ if %ERRORLEVEL% equ 1 (
 goto :EOF
 
 :UpgradeCygwin
-if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_ROOT%\setup-%CYG_ARCH%.exe" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
+if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
 for %%P in (%CYGWIN_COMMANDS%) do "%CYG_ROOT%\bin\bash.exe" -lc "%%P --help" > nul || set CYGWIN_UPGRADE_REQUIRED=1
 "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   echo Cygwin package upgrade required - please go and drink coffee
-  "%CYG_ROOT%\setup-%CYG_ARCH%.exe" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
+  "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
@@ -81,14 +99,17 @@ goto :EOF
 
 :pre_build
 
-cd "%APPVEYOR_BUILD_FOLDER%\.."
+@rem Assume that it's this repository's root
+cd "%BUILD_FOLDER%"
+cd ..
 
 curl -SLfs "https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz" -o "opam-%OPAM_VERSION%.tar.gz"
 tar xf "opam-%OPAM_VERSION%.tar.gz"
-move "opam-%OPAM_VERSION%" "opam"
 
+@rem FIXME: I’m trying to reproduce the exact conditions of Opam's CI.
+move "opam-%OPAM_VERSION%" "opam"
 cd "opam"
-set BUILD_FOLDER="%CD%"
+for /f "delims=" %%U in ('%CYG_ROOT%\bin\cygpath.exe -u %CD%') do set OPAM_BUILD_FOLDER=%%U
 
 rem Use flexdll commit bd636de.
 if "%PORT%" neq "" patch -Np1 -i ..\ocaml-platform\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
@@ -110,7 +131,7 @@ if "%INSTALLED_URL%" neq "%OCAML_URL% %FLEXDLL_URL% %DEP_MODE%" if exist bootstr
   if exist src_ext\archives\nul rd /s/q src_ext\archives
 )
 
-if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
+if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
 if not exist bootstrap\installed-packages goto SkipCheck
 
 fc bootstrap\installed-packages current-lib-pkg-list > nul
@@ -118,7 +139,7 @@ if %ERRORLEVEL% equ 1 (
   echo lib-pkg packages changed:
   "%CYG_ROOT%\bin\diff.exe" bootstrap/installed-packages current-lib-pkg-list | "%CYG_ROOT%\bin\sed.exe" -ne "s/</Remove/p" -e "s/>/Add/p" | "%CYG_ROOT%\bin\gawk.exe" "BEGIN{FS="" ""}$2!=k{if(k!="""")print o==f?w:o;w=$0;k=$2;f=o=$2"" ""$3;next}{o=""Switch ""o"" --> ""$3}END{print o==f?w:o}"
   echo lib-pkg will be re-built
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
   del bootstrap\installed-packages
 ) else (
   del current-lib-pkg-list
@@ -126,10 +147,10 @@ if %ERRORLEVEL% equ 1 (
 
 :SkipCheck
 
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext cache-archives" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext cache-archives" || exit /b 1
 
 if not exist bootstrap\nul (
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make compiler" || exit /b 1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make compiler" || exit /b 1
   for /f "delims=" %%U in ('type bootstrap\installed-tarball') do echo %%U %DEP_MODE%> bootstrap\installed-tarball
   if exist bootstrap\ocaml-*.tar.gz del bootstrap\ocaml-*.tar.gz
   if "%PORT%" neq "" if exist bootstrap\flexdll-*.tar.gz del bootstrap\flexdll-*.tar.gz
@@ -143,12 +164,12 @@ if not exist bootstrap\nul (
     md bootstrap\%%D
   )
 ) else (
-  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
-  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %PORT%" || exit /b 1
+  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %PORT%" || exit /b 1
 )
 
 if exist current-lib-pkg-list (
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make lib-pkg" || exit /b 1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make lib-pkg" || exit /b 1
   move current-lib-pkg-list bootstrap\installed-packages
 )
 
@@ -164,5 +185,5 @@ set PRIVATE_RUNTIME=
 if "%PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
 goto :EOF

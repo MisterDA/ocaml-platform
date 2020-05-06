@@ -47,8 +47,10 @@ for:
     environment:
       CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
+      CYG_SETUP: '%CYG_ROOT%\setup-%CYG_ARCH%.exe'
       CYG_CACHE: '%APPDATA%\cygwin'
       CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
+      BUILD_FOLDER: '%APPVEYOR_BUILD_FOLDER%'
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
     build_script:

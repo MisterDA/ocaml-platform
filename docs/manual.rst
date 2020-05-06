@@ -52,49 +52,23 @@ variables to your liking:
 
 .. code:: cmd
 
-   set VERBOSE=yes
-   set OCAML_PLATFORM_NAME=OCamlPlatform
-   
    @rem Any git ref will work
    @rem To select a custom repo, edit the URLs in windows/build.sh
    set OCAML_VERSION=4.10.0
    set OPAM_VERSION=2.1.0-alpha
    
-   @rem Choose between cygwin mingw64 msvc64
+   @rem Choose between "" (cygwin native) "mingw64" "msvc64"
    set PORT=mingw64
    
-   @rem Configure Cygwin
+   @rem Optionaly customize those variables
+   set CYG_ARCH=x86_64
    set CYG_ROOT=C:\cygwin64
-   set CYG_CACHE=%APPDATA%\cygwin
+   set CYG_CACHE="%APPDATA%\cygwin"
    set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
    
-   @rem Install Cygwin base
-   setup-x86_64.exe --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
-       --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
-       --local-package-dir "%CYG_CACHE%"
-
-Wait for the install to finish, and run:
-
-.. code:: cmd
-
-   move setup-x86_64.exe %CYG_ROOT%
-   call ocaml-platform-master\windows\install.cmd
-
-Wait for the install to finish, and run:
-
-.. code:: cmd
-
-   %CYG_ROOT%\bin\mintty.exe -
-
-In the new terminal, run:
-
-.. code:: sh
-
-   curl -L https://github.com/MisterDA/ocaml-platform/archive/master.tar.gz -o ocaml-platform.tar.gz
-   tar xf ocaml-platform.tar.gz
-
-   # an absolute path is required
-   "${PWD}/ocaml-platform-master/windows/build.sh"
+   @rem Set the build folder and call the build script
+   set BUILD_FOLDER="%CD%\ocaml-platform-master"
+   call "%BUILD_FOLDER%\windows\install.cmd" all
 
 macOS
 ~~~~~
