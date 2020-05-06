@@ -11,14 +11,14 @@ environment:
     OCAML_VERSION: 4.10.0
     OPAM_VERSION: 3def1a6d1ff102aaa608f5e9170783b96f55069d
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     - PORT: mingw64
       WINDOWS: yes
     - PORT: msvc64
       WINDOWS: yes
     - PORT: cygwin
       WINDOWS: yes
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
 
 for:
   -
