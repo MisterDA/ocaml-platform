@@ -1,7 +1,7 @@
 ARG PREFIX=/opt/ocaml-platform
 ARG OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
-ARG OCAML_VERSION=master
-ARG OPAM_VERSION=4.10.0
+ARG OCAML_VERSION=4.10.0
+ARG OPAM_VERSION=master
 
 FROM debian:10 AS ocaml-platform-builder-base
 ARG PREFIX
