@@ -29,12 +29,18 @@ for:
         - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     build_script:
       - $APPVEYOR_BUILD_FOLDER/build.sh -s linux
+    cache:
+      - $APPVEYOR_BUILD_FOLDER/opam-$OPAM_VERSION/bootstrap
+      - $APPVEYOR_BUILD_FOLDER/opam-$OPAM_VERSION/src_ext/archives
   -
     matrix:
       only:
         - APPVEYOR_BUILD_WORKER_IMAGE: macOS
     build_script:
       - $APPVEYOR_BUILD_FOLDER/build.sh -s macos
+    cache:
+      - $APPVEYOR_BUILD_FOLDER/opam-$OPAM_VERSION/bootstrap
+      - $APPVEYOR_BUILD_FOLDER/opam-$OPAM_VERSION/src_ext/archives
   -
     matrix:
       only:

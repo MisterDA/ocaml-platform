@@ -37,6 +37,10 @@ if [ "$VERBOSE" = yes ]; then
 fi
 
 build_ocaml() {
+    echo "=============== PWD ============="
+    pwd
+    echo "================================="
+
     download_file "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" \
                   "ocaml-${OCAML_VERSION}.tar.gz"
     tar xf "ocaml-${OCAML_VERSION}.tar.gz"

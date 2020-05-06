@@ -69,6 +69,10 @@ environment() {
 }
 
 bootstrap_opam() {
+    echo "=============== PWD ============="
+    pwd
+    echo "================================="
+
     download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" \
                   "opam-${OPAM_VERSION}.tar.gz"
     tar xf "opam-${OPAM_VERSION}.tar.gz"
