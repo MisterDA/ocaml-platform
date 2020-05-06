@@ -129,12 +129,11 @@ artifacts() {
     if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
 
     cd "$PREFIX" || exit
-    cd ..
-    local archive="$(/bin/basename "$PREFIX")"
-    tar czf "${OCAML_PLATFORM_NAME}.tar.gz" "${archive}"
+    cd .. || exit
+    tar czf "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz" "$(/bin/basename "$PREFIX")"
 
     if [ "${APPVEYOR-}" = True ]; then
-        appveyor PushArtifact "${OCAML_PLATFORM_NAME}.tar.gz"
+        appveyor PushArtifact "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz"
     fi
 }
 

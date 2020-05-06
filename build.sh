@@ -95,11 +95,12 @@ build_ocaml_platform() {
 artifacts() {
     if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
 
-    cd "$BUILDDIR" || exit
-    tar czf "${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
+    cd "$PREFIX" || exit
+    cd .. || exit
+    tar czf "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
 
     if [ "${APPVEYOR-}" = True ] || [ "${APPVEYOR-}" = true ]; then
-        appveyor PushArtifact "${OCAML_PLATFORM_NAME}.tar.gz"
+        appveyor PushArtifact "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz"
     fi
 }
 
