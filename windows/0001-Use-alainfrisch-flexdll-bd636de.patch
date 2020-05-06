@@ -1,12 +1,3 @@
-From 20d2c3f09a6e36be2d7efd9fcc98078b1312a94f Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Antonin=20D=C3=A9cimo?= <antonin.decimo@gmail.com>
-Date: Wed, 6 May 2020 16:56:13 +0200
-Subject: [PATCH] Use alainfrisch/flexdll bd636de.
-
----
- src_ext/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
 diff --git a/src_ext/Makefile b/src_ext/Makefile
 index db366480..2b5be3f0 100644
 --- a/src_ext/Makefile
@@ -22,6 +13,3 @@ index db366480..2b5be3f0 100644
  
  ifndef FETCH
    ifneq ($(shell command -v curl 2>/dev/null),)
--- 
-2.26.2
-

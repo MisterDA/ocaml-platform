@@ -12,13 +12,16 @@
 @rem *                                                                     *
 @rem ***********************************************************************
 
+@rem Changes for the OCaml Platform:
+@rem Copyright (c) 2020 Antonin Décimo.
+
 @rem BE CAREFUL ALTERING THIS FILE TO ENSURE THAT ERRORS PROPAGATE
 @rem IF A COMMAND SHOULD FAIL IT PROBABLY NEEDS TO END WITH
 @rem   || exit /b 1
 @rem BASICALLY, DO THE TESTING IN BASH...
 
 @rem Do not call setlocal!
-@echo off
+@echo on
 
 goto %1
 
@@ -43,10 +46,8 @@ if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
 )
 goto :EOF
 
-:install
-set CYG_ROOT=C:\%CYG_ROOT%
 
-cd "%APPVEYOR_BUILD_FOLDER%"
+:install
 
 rem CYGWIN_PACKAGES is the list of required Cygwin packages (cygwin is included
 rem in the list just so that the Cygwin version is always displayed on the log).
@@ -56,15 +57,15 @@ rem needs upgrading.
 set CYGWIN_PACKAGES=cygwin make patch curl diffutils tar unzip git
 set CYGWIN_COMMANDS=cygcheck make patch curl diff tar unzip git
 
-if "%OCAML_PORT%" equ "mingw" (
+if "%PORT%" equ "mingw" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-i686-gcc-g++
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% i686-w64-mingw32-g++
 )
-if "%OCAML_PORT%" equ "mingw64" (
+if "%PORT%" equ "mingw64" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-x86_64-gcc-g++
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% x86_64-w64-mingw32-g++
 )
-if "%OCAML_PORT%" equ "" (
+if "%PORT%" equ "" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% gcc-g++ flexdll
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% g++ flexlink
 )
@@ -75,8 +76,22 @@ set CYGWIN_UPGRADE_REQUIRED=0
 for %%P in (%CYGWIN_PACKAGES%) do call :CheckPackage %%P
 call :UpgradeCygwin
 
+goto :EOF
+
+
+:pre_build
+
+cd "%APPVEYOR_BUILD_FOLDER%\.."
+
+curl -SLfs "https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz" -o "opam-%OPAM_VERSION%.tar.gz"
+tar xf "opam-%OPAM_VERSION%.tar.gz"
+move "opam-%OPAM_VERSION%" "opam"
+
+cd "opam"
+set BUILD_FOLDER="%CD%"
+
 rem Use flexdll commit bd636de.
-if "%OCAML_PORT%" neq "" git apply 0001-Use-alainfrisch-flexdll-bd636de.patch
+if "%PORT%" neq "" patch -Np1 -i ..\ocaml-platform\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
 
 set INSTALLED_URL=
 for /f "tokens=3" %%U in ('findstr /C:"URL_ocaml = " src_ext\Makefile') do set OCAML_URL=%%U
@@ -95,7 +110,7 @@ if "%INSTALLED_URL%" neq "%OCAML_URL% %FLEXDLL_URL% %DEP_MODE%" if exist bootstr
   if exist src_ext\archives\nul rd /s/q src_ext\archives
 )
 
-if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
+if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
 if not exist bootstrap\installed-packages goto SkipCheck
 
 fc bootstrap\installed-packages current-lib-pkg-list > nul
@@ -103,7 +118,7 @@ if %ERRORLEVEL% equ 1 (
   echo lib-pkg packages changed:
   "%CYG_ROOT%\bin\diff.exe" bootstrap/installed-packages current-lib-pkg-list | "%CYG_ROOT%\bin\sed.exe" -ne "s/</Remove/p" -e "s/>/Add/p" | "%CYG_ROOT%\bin\gawk.exe" "BEGIN{FS="" ""}$2!=k{if(k!="""")print o==f?w:o;w=$0;k=$2;f=o=$2"" ""$3;next}{o=""Switch ""o"" --> ""$3}END{print o==f?w:o}"
   echo lib-pkg will be re-built
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
   del bootstrap\installed-packages
 ) else (
   del current-lib-pkg-list
@@ -111,13 +126,13 @@ if %ERRORLEVEL% equ 1 (
 
 :SkipCheck
 
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext cache-archives" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext cache-archives" || exit /b 1
 
 if not exist bootstrap\nul (
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make compiler" || exit /b 1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make compiler" || exit /b 1
   for /f "delims=" %%U in ('type bootstrap\installed-tarball') do echo %%U %DEP_MODE%> bootstrap\installed-tarball
   if exist bootstrap\ocaml-*.tar.gz del bootstrap\ocaml-*.tar.gz
-  if "%OCAML_PORT%" neq "" if exist bootstrap\flexdll-*.tar.gz del bootstrap\flexdll-*.tar.gz
+  if "%PORT%" neq "" if exist bootstrap\flexdll-*.tar.gz del bootstrap\flexdll-*.tar.gz
   del bootstrap\ocaml\bin\*.byte.exe
   del bootstrap\ocaml\lib\ocaml\expunge.exe
   for /f %%D in ('dir /b/ad bootstrap\ocaml-*') do (
@@ -128,27 +143,26 @@ if not exist bootstrap\nul (
     md bootstrap\%%D
   )
 ) else (
-  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
-  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %OCAML_PORT%" || exit /b 1
+  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %PORT%" || exit /b 1
 )
 
 if exist current-lib-pkg-list (
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make lib-pkg" || exit /b 1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER && make lib-pkg" || exit /b 1
   move current-lib-pkg-list bootstrap\installed-packages
 )
 
-goto :EOF
 
 :build
-if "%OCAML_PORT%" equ "" (
+if "%PORT%" equ "" (
   rem make install doesn't yet work for the native Windows builds
   set POST_COMMAND=^&^& make opam-installer install
 )
 set LIB_EXT=
 if "%DEP_MODE%" equ "lib-ext" set LIB_EXT=^&^& make lib-ext
 set PRIVATE_RUNTIME=
-if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
+if "%PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
 goto :EOF
