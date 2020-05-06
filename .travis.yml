@@ -16,6 +16,13 @@ jobs:
         - docker
       script:
         - docker build --build-arg=OCAML_VERSION=$OCAML_VERSION --build-arg=OPAM_VERSION=$OPAM_VERSION -f "linux/Dockerfile" "linux/"
+        - build.sh -s linux
+      cache:
+        directories:
+          - opam-$OPAM_VERSION/bootstrap
     - os: osx
       script:
-        - build.sh -s macos
+        - $TRAVIS_BUILD_DIR/build.sh -s macos
+      cache:
+        directories:
+          - opam-$OPAM_VERSION/bootstrap
