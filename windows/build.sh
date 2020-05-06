@@ -100,6 +100,20 @@ build_opam() {
     cd .. || exit
 }
 
+eval_opam_env() {
+    cygpath() { /usr/bin/cygpath.exe "$@"; }
+    eval $(opam env | sed 's/\r$//')
+    OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX
+    CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH
+    OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH
+    MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH
+    PATH="$(cygpath -p "$PATH")"; export PATH
+
+    if [ "$PORT" = msvc64 ]; then
+        eval $("${HOME}/.msvs-promote-path")
+    fi
+}
+
 build_ocaml_platform() {
     cd "$PREFIX" || exit
 
@@ -112,17 +126,7 @@ build_ocaml_platform() {
 
     opam init -a --disable-sandboxing -y "$OPAM_REPO"
 
-    cygpath() { /usr/bin/cygpath.exe "$@"; }
-    eval $(opam env | sed 's/\r$//')
-    OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX
-    CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH
-    OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH
-    MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH
-    PATH="$(cygpath -p "$PATH")"; export PATH
-
-    if [ "$PORT" = msvc64 ]; then
-        eval $("${HOME}/.msvs-promote-path")
-    fi
+    eval_opam_env
 
     opam install -y --with-doc \
          $(opam list --required-by ocaml-platform --columns=package -s | sed 's/\r$//') \
@@ -131,6 +135,9 @@ build_ocaml_platform() {
 
 artifacts() {
     if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
+
+    eval_opam_env
+    opam clean -cars
 
     cd "$PREFIX" || exit
     cd .. || exit

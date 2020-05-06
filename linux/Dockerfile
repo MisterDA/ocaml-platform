@@ -44,7 +44,7 @@ RUN opam init -v -y -a --disable-sandboxing \
 RUN opam exec -- opam install -v -y --with-doc \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
-
+RUN opam exec -- opam clean -cars
 
 FROM ocaml-platform-builder AS ocaml-platform-tester
 ARG PREFIX

@@ -99,6 +99,8 @@ build_ocaml_platform() {
 artifacts() {
     if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
 
+    opam exec -- opam clean -cars
+
     cd "$PREFIX" || exit
     cd .. || exit
     tar czf "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
