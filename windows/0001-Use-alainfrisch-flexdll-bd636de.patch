@@ -1,0 +1,27 @@
+From 20d2c3f09a6e36be2d7efd9fcc98078b1312a94f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Antonin=20D=C3=A9cimo?= <antonin.decimo@gmail.com>
+Date: Wed, 6 May 2020 16:56:13 +0200
+Subject: [PATCH] Use alainfrisch/flexdll bd636de.
+
+---
+ src_ext/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src_ext/Makefile b/src_ext/Makefile
+index db366480..2b5be3f0 100644
+--- a/src_ext/Makefile
++++ b/src_ext/Makefile
+@@ -14,8 +14,8 @@ PATCH ?= patch
+ URL_ocaml = http://caml.inria.fr/pub/distrib/ocaml-4.07/ocaml-4.07.1.tar.gz
+ MD5_ocaml = 0b180b273ce5cc2ac68f347c9b06d06f
+ 
+-URL_flexdll = https://github.com/alainfrisch/flexdll/archive/0.37.tar.gz
+-MD5_flexdll = cc456a89382e60d84130cddd53977486
++URL_flexdll = https://github.com/alainfrisch/flexdll/archive/bd636def70d941674275b2f4b6c13a34ba23f9c9.tar.gz
++MD5_flexdll = d6888085aa4bcd1087a47f21235f3d23
+ 
+ ifndef FETCH
+   ifneq ($(shell command -v curl 2>/dev/null),)
+-- 
+2.26.2
+

@@ -12,10 +12,13 @@ environment:
     OPAM_VERSION: 3def1a6d1ff102aaa608f5e9170783b96f55069d
   matrix:
     - PORT: mingw64
+      DEP_MODE: lib-pkg
       WINDOWS: yes
     - PORT: msvc64
+      DEP_MODE: lib-ext
       WINDOWS: yes
-    - PORT: cygwin
+    - PORT:
+      DEP_MODE: lib-ext
       WINDOWS: yes
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - APPVEYOR_BUILD_WORKER_IMAGE: macOS
@@ -42,15 +45,18 @@ for:
       only:
         - WINDOWS: yes
     environment:
+      CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
       CYG_CACHE: '%APPDATA%\cygwin'
       CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
     install:
-      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd"
+      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
     build_script:
-      - call "%CYG_ROOT%\bin\bash.exe" "-lc" "$APPVEYOR_BUILD_FOLDER/windows/build.sh"
+      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" build
     cache:
       - '%CYG_CACHE%'
+      - '%APPVEYOR_BUILD_FOLDER%\opam-%OPAM_VERSION%\bootstrap'
+      - '%APPVEYOR_BUILD_FOLDER%\opam-%OPAM_VERSION%\src_ext\archives'
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the

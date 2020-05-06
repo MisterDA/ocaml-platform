@@ -59,15 +59,15 @@ build_ocaml() {
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
     elif [ "$PORT" = mingw64 ]; then
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-w64-mingw32
-    elif [ "$PORT" = cygwin ]; then
+    else
         ./configure --prefix="$PREFIX"
     fi
 
-    if [ "$PORT" != cygwin ]; then
+    if [ "$PORT" = msvc64 ] || [ "$PORT" = mingw64 ]; then
        make -j"$(nproc)" flexdll
     fi
     make -j"$(nproc)" world.opt
-    if [ "$PORT" != cygwin ]; then
+    if [ "$PORT" = msvc64 ] || [ "$PORT" = mingw64 ]; then
        make -j"$(nproc)" flexlink.opt
     fi
     make -j"$(nproc)" install
@@ -90,7 +90,7 @@ build_opam() {
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-pc-windows
     elif [ "$PORT" = mingw64 ]; then
         ./configure --prefix="$PREFIX" --build=x86_64-unknown-cygwin --host=x86_64-w64-mingw32
-    elif [ "$PORT" = cygwin ]; then
+    else
         ./configure --prefix="$PREFIX"
     fi
 

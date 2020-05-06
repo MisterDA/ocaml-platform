@@ -19,7 +19,7 @@ jobs:
     - os: linux
       dist: bionic
       script:
-        - build.sh -s linux
+        - $TRAVIS_BUILD_DIR/build.sh -s linux
       cache:
         directories:
           - opam-$OPAM_VERSION/bootstrap
