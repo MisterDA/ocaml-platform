@@ -1,0 +1,19 @@
+language: c
+
+git:
+  depth: 1
+
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+      services:
+        - docker
+
+env:
+  global:
+    - OCAML_VERSION: 4.10.0
+    - OPAM_VERSION: 3def1a6d1ff102aaa608f5e9170783b96f55069d
+
+script:
+  - docker build --build-arg=OCAML_VERSION=$OCAML_VERSION --build-arg=OPAM_VERSION=$OPAM_VERSION -f "linux/Dockerfile" "linux/"
