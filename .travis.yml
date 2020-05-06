@@ -20,12 +20,10 @@ jobs:
       dist: bionic
       script:
         - $TRAVIS_BUILD_DIR/build.sh -s linux
-      cache:
-        directories:
-          - opam-$OPAM_VERSION/bootstrap
     - os: osx
       script:
         - $TRAVIS_BUILD_DIR/build.sh -s macos
-      cache:
-        directories:
-          - opam-$OPAM_VERSION/bootstrap
+
+cache:
+  directories:
+    - opam-$OPAM_VERSION/bootstrap
