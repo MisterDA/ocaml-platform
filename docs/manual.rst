@@ -43,17 +43,20 @@ Build from source
 +++++++++++++++++
 
 This procedure requires an Internet connection. In a Windows system,
-download `Cygwin <https://www.cygwin.com/setup-x86_64.exe>`__.
-`Download this repository
-<https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__ and
-extract it in the same location. Open a ``cmd.exe``, and ``cd`` where
-``setup-x86_64.exe`` was downloaded. Then tune the environment
-variables to your liking:
+download `the Cygwin installer
+<https://www.cygwin.com/setup-x86_64.exe>`__. Download and extract
+this repository's `archive
+<https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__ *in
+the same location* (e.g., ``C:\Users\User\Download``) as where you
+downloaded Cygwin's installer.
+
+Open a ``cmd.exe``, and ``cd`` to this directory. Then, tune the
+environment variables:
 
 .. code:: cmd
 
    @rem Any git ref will work
-   @rem To select a custom repo, edit the URLs in windows/build.sh
+   @rem To select a custom repo, edit the URLs in windows/install.cmd
    set OCAML_VERSION=4.10.0
    set OPAM_VERSION=2.1.0-alpha
    
@@ -85,43 +88,42 @@ The following script installs the OCaml Platform into
 Roadmap
 -------
 
-1. Finish the complete (but experimental) build of the platform for all supported systems.
+#. Finish the complete (but experimental) build of the platform for
+   all supported systems.
 
-  - ☐ Windows.
-       On some compilers Opam doesn't bootstrap. On some others, packets won't compile.
-  - ☑ Linux
-  - ☑ macOS
+   - ☐ Windows.
+     On some compilers Opam doesn't bootstrap. On some others,
+     packets won't compile.
+   - ☑ Linux
+   - ☑ macOS
 
-2. Enable build artifacts of the platform.
+#. Enable build artifacts of the platform.
 
-  - ☐ Windows.
-  - ☐ Travis CI.
-  - ☑ {Linux, macOS} × {AppVeyor}
+   - ☐ Windows.
+   - ☐ Travis CI.
+   - ☑ {Linux, macOS} × {AppVeyor}
 
-3. Deploy the platform (upload releases).
+#. Deploy the platform (upload releases).
 
-4. Write binary installers.
+#. Write binary installers.
 
-  - ☑ {Linux, macOS} almost.
+   - ☑ {Linux, macOS} almost.
 
-5. Integrate and test the platform into the host.
+#. Integrate and test the platform into the host.
 
-  - shell integration (Opam should take care of that)
-  - editor integration
+   - shell integration (Opam should take care of that)
+   - editor integration
+      + VSCode
+      + Atom
+      + Emacs/Vim
 
-    + VSCode
-    + Atom
-    + Emacs/Vim
+#. Write source installers. The build scripts should do.
 
-6. Write source installers.
+#. Write documentation for package maintainers.
 
-   The build scripts should do.
+   - Inclusion standards.
+   - Sample packages.
+   - Offline and online documentation.
+   - Release model.
 
-7. Write documentation for package maintainers.
-
-  - Inclusion standards.
-  - Sample packages.
-  - Offline and online documentation.
-  - Release model.
-
-8. Write documentation for the users.
+#. Write documentation for the users.
