@@ -57,8 +57,8 @@ for:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" pre_build
     cache:
       - '%CYG_CACHE%'
-      - '%APPVEYOR_BUILD_FOLDER%\opam\bootstrap'
-      - '%APPVEYOR_BUILD_FOLDER%\opam\src_ext\archives'
+      - 'C:\projects\opam\bootstrap'
+      - 'C:\projects\opam\src_ext\archives'
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
