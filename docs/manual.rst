@@ -81,3 +81,47 @@ The following script installs the OCaml Platform into
    sh -c "$(curl -sSL 'https://raw.githubusercontent.com/MisterDA/ocaml-platform/master/macos/installer.sh')"
 
 *Coming soon!*
+
+Roadmap
+-------
+
+1. Finish the complete (but experimental) build of the platform for all supported systems.
+
+  - ☐ Windows.
+       On some compilers Opam doesn't bootstrap. On some others, packets won't compile.
+  - ☑ Linux
+  - ☑ macOS
+
+2. Enable build artifacts of the platform.
+
+  - ☐ Windows.
+  - ☐ Travis CI.
+  - ☑ {Linux, macOS} × {AppVeyor}
+
+3. Deploy the platform (upload releases).
+
+4. Write binary installers.
+
+  - ☑ {Linux, macOS} almost.
+
+5. Integrate and test the platform into the host.
+
+  - shell integration (Opam should take care of that)
+  - editor integration
+
+    + VSCode
+    + Atom
+    + Emacs/Vim
+
+6. Write source installers.
+
+   The build scripts should do.
+
+7. Write documentation for package maintainers.
+
+  - Inclusion standards.
+  - Sample packages.
+  - Offline and online documentation.
+  - Release model.
+
+8. Write documentation for the users.
