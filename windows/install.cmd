@@ -46,6 +46,7 @@ if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
 
 call :install
 call :pre_build
+call :weird_stuff
 
 goto :EOF
 
@@ -118,6 +119,11 @@ for /f "delims=" %%U in ('%CYG_ROOT%\bin\cygpath.exe -u %CD%') do set OPAM_BUILD
 rem Use flexdll commit bd636de.
 if "%OCAML_PORT%" neq "" patch -Np1 -i ..\ocaml-platform\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
 
+goto :EOF
+
+
+:weird_stuff
+
 set INSTALLED_URL=
 for /f "tokens=3" %%U in ('findstr /C:"URL_ocaml = " src_ext\Makefile') do set OCAML_URL=%%U
 for /f "tokens=3" %%U in ('findstr /C:"URL_flexdll = " src_ext\Makefile') do set FLEXDLL_URL=%%U
@@ -178,7 +184,7 @@ if exist current-lib-pkg-list (
 )
 
 
-:build
+:old_build
 if "%OCAML_PORT%" equ "" (
   rem make install doesn't yet work for the native Windows builds
   set POST_COMMAND=^&^& make opam-installer install
@@ -190,4 +196,8 @@ if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
 "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+goto :EOF
+
+:build
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make compiler auto && ./configure && make lib-ext && make && make install" || exit /b 1
 goto :EOF

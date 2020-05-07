@@ -55,6 +55,7 @@ for:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
     build_script:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" pre_build
+      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" build
     cache:
       - '%CYG_CACHE%'
       - 'C:\projects\opam\bootstrap'
