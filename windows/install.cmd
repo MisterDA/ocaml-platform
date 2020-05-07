@@ -40,6 +40,10 @@ set CYG_SETUP="%CD%\setup-%CYG_ARCH%.exe"
               --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
               --local-package-dir "%CYG_CACHE%"
 
+if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext
+if "%OCAML_PORT%" equ "msvc" set DEP_MODE=lib-ext
+if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
+
 call :install
 call :pre_build
 
@@ -75,15 +79,15 @@ rem needs upgrading.
 set CYGWIN_PACKAGES=cygwin make patch curl diffutils tar unzip git
 set CYGWIN_COMMANDS=cygcheck make patch curl diff tar unzip git
 
-if "%PORT%" equ "mingw" (
+if "%OCAML_PORT%" equ "mingw" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-i686-gcc-g++
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% i686-w64-mingw32-g++
 )
-if "%PORT%" equ "mingw64" (
+if "%OCAML_PORT%" equ "mingw64" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-x86_64-gcc-g++
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% x86_64-w64-mingw32-g++
 )
-if "%PORT%" equ "" (
+if "%OCAML_PORT%" equ "" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% gcc-g++ flexdll
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% g++ flexlink
 )
@@ -112,7 +116,7 @@ cd "opam"
 for /f "delims=" %%U in ('%CYG_ROOT%\bin\cygpath.exe -u %CD%') do set OPAM_BUILD_FOLDER=%%U
 
 rem Use flexdll commit bd636de.
-if "%PORT%" neq "" patch -Np1 -i ..\ocaml-platform\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
+if "%OCAML_PORT%" neq "" patch -Np1 -i ..\ocaml-platform\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
 
 set INSTALLED_URL=
 for /f "tokens=3" %%U in ('findstr /C:"URL_ocaml = " src_ext\Makefile') do set OCAML_URL=%%U
@@ -153,7 +157,7 @@ if not exist bootstrap\nul (
   "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make compiler" || exit /b 1
   for /f "delims=" %%U in ('type bootstrap\installed-tarball') do echo %%U %DEP_MODE%> bootstrap\installed-tarball
   if exist bootstrap\ocaml-*.tar.gz del bootstrap\ocaml-*.tar.gz
-  if "%PORT%" neq "" if exist bootstrap\flexdll-*.tar.gz del bootstrap\flexdll-*.tar.gz
+  if "%OCAML_PORT%" neq "" if exist bootstrap\flexdll-*.tar.gz del bootstrap\flexdll-*.tar.gz
   del bootstrap\ocaml\bin\*.byte.exe
   del bootstrap\ocaml\lib\ocaml\expunge.exe
   for /f %%D in ('dir /b/ad bootstrap\ocaml-*') do (
@@ -165,7 +169,7 @@ if not exist bootstrap\nul (
   )
 ) else (
   if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
-  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %PORT%" || exit /b 1
+  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %OCAML_PORT%" || exit /b 1
 )
 
 if exist current-lib-pkg-list (
@@ -175,14 +179,14 @@ if exist current-lib-pkg-list (
 
 
 :build
-if "%PORT%" equ "" (
+if "%OCAML_PORT%" equ "" (
   rem make install doesn't yet work for the native Windows builds
   set POST_COMMAND=^&^& make opam-installer install
 )
 set LIB_EXT=
 if "%DEP_MODE%" equ "lib-ext" set LIB_EXT=^&^& make lib-ext
 set PRIVATE_RUNTIME=
-if "%PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
+if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
 "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1

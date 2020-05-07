@@ -58,7 +58,7 @@ variables to your liking:
    set OPAM_VERSION=2.1.0-alpha
    
    @rem Choose between "" (cygwin native) "mingw64" "msvc64"
-   set PORT=mingw64
+   set OCAML_PORT=mingw64
    
    @rem Optionaly customize those variables
    set CYG_ARCH=x86_64
