@@ -44,7 +44,6 @@ if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
 goto :EOF
 
 :install
-set CYG_ROOT=C:\%CYG_ROOT%
 
 cd "%BUILD_FOLDER%"
 
