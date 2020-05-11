@@ -53,13 +53,15 @@ for:
       BUILD_FOLDER: '%APPVEYOR_BUILD_FOLDER%'
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
+      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" download_opam
     build_script:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" pre_build
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" build
     cache:
       - '%CYG_CACHE%'
-      - 'C:\projects\opam\bootstrap'
-      - 'C:\projects\opam\src_ext\archives'
+      - '%APPVEYOR_BUILD_FOLDER%\opam-%OPAM_VERSION%.tar.gz'
+      - '%APPVEYOR_BUILD_FOLDER%\opam\bootstrap'
+      - '%APPVEYOR_BUILD_FOLDER%\opam\src_ext\archives'
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
