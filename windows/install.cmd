@@ -24,6 +24,31 @@ goto %1
 
 goto :EOF
 
+:all
+
+if "%CYG_ARCH%"   equ "" set CYG_ARCH=x86_64
+if "%CYG_ROOT%"   equ "" set CYG_ROOT=C:\cygwin64
+if "%CYG_CACHE%"  equ "" set CYG_CACHE="%APPDATA%\cygwin"
+if "%CYG_MIRROR%" equ "" set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
+
+if "%BUILD_FOLDER%" equ "" set BUILD_FOLDER="%CD%"
+set CYG_SETUP="%BUILD_FOLDER%\setup-%CYG_ARCH%.exe"
+
+"%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
+              --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
+              --local-package-dir "%CYG_CACHE%"
+
+if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext
+if "%OCAML_PORT%" equ "msvc" set DEP_MODE=lib-ext
+if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
+
+call :install
+call :pre_build
+call :build
+
+goto :EOF
+
+
 :CheckPackage
 "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %1" | findstr %1 > nul
 if %ERRORLEVEL% equ 1 (
@@ -31,6 +56,7 @@ if %ERRORLEVEL% equ 1 (
   set CYGWIN_INSTALL_PACKAGES=%CYGWIN_INSTALL_PACKAGES%,%1
 )
 goto :EOF
+
 
 :UpgradeCygwin
 if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
@@ -42,6 +68,7 @@ if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
+
 
 :install
 
@@ -59,6 +86,7 @@ if "%OCAML_PORT%" equ "mingw" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-i686-gcc-g++
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% i686-w64-mingw32-g++
 )
+
 if "%OCAML_PORT%" equ "mingw64" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-x86_64-gcc-g++
   set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% x86_64-w64-mingw32-g++
@@ -73,6 +101,13 @@ set CYGWIN_UPGRADE_REQUIRED=0
 
 for %%P in (%CYGWIN_PACKAGES%) do call :CheckPackage %%P
 call :UpgradeCygwin
+
+goto :EOF
+
+
+:pre_build
+
+cd "%BUILD_FOLDER%"
 
 rem Use dra27 flexdll for native ports
 if "%OCAML_PORT%" neq "" git apply appveyor.patch
@@ -138,6 +173,7 @@ if exist current-lib-pkg-list (
 
 goto :EOF
 
+
 :build
 if "%OCAML_PORT%" equ "" (
   rem make install doesn't yet work for the native Windows builds
@@ -151,6 +187,7 @@ set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
 "%CYG_ROOT%\bin\bash.exe" -lc "cd $BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
 goto :EOF
+
 
 :test
 rem Configure Git for Windows (for the testsuite, this isn't strictly necessary
