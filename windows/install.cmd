@@ -12,41 +12,15 @@
 @rem *                                                                     *
 @rem ***********************************************************************
 
-@rem Changes for the OCaml Platform:
-@rem Copyright (c) 2020 Antonin Décimo.
-
 @rem BE CAREFUL ALTERING THIS FILE TO ENSURE THAT ERRORS PROPAGATE
 @rem IF A COMMAND SHOULD FAIL IT PROBABLY NEEDS TO END WITH
 @rem   || exit /b 1
 @rem BASICALLY, DO THE TESTING IN BASH...
 
 @rem Do not call setlocal!
-@echo on
+@echo off
 
 goto %1
-
-goto :EOF
-
-:all
-
-if "%CYG_ARCH%"   neq "" set CYG_ARCH=x86_64
-if "%CYG_ROOT%"   neq "" set CYG_ROOT=C:\cygwin64
-if "%CYG_CACHE%"  neq "" set CYG_CACHE="%APPDATA%\cygwin"
-if "%CYG_MIRROR%" neq "" set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
-
-set CYG_SETUP="%CD%\setup-%CYG_ARCH%.exe"
-
-"%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
-              --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
-              --local-package-dir "%CYG_CACHE%"
-
-if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext
-if "%OCAML_PORT%" equ "msvc" set DEP_MODE=lib-ext
-if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
-
-call :install
-call :pre_build
-call :weird_stuff
 
 goto :EOF
 
@@ -59,18 +33,20 @@ if %ERRORLEVEL% equ 1 (
 goto :EOF
 
 :UpgradeCygwin
-if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
+if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_ROOT%\setup-%CYG_ARCH%.exe" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
 for %%P in (%CYGWIN_COMMANDS%) do "%CYG_ROOT%\bin\bash.exe" -lc "%%P --help" > nul || set CYGWIN_UPGRADE_REQUIRED=1
 "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   echo Cygwin package upgrade required - please go and drink coffee
-  "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
+  "%CYG_ROOT%\setup-%CYG_ARCH%.exe" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
 
-
 :install
+set CYG_ROOT=C:\%CYG_ROOT%
+
+cd "%APPVEYOR_BUILD_FOLDER%"
 
 rem CYGWIN_PACKAGES is the list of required Cygwin packages (cygwin is included
 rem in the list just so that the Cygwin version is always displayed on the log).
@@ -99,30 +75,8 @@ set CYGWIN_UPGRADE_REQUIRED=0
 for %%P in (%CYGWIN_PACKAGES%) do call :CheckPackage %%P
 call :UpgradeCygwin
 
-goto :EOF
-
-
-:pre_build
-
-@rem Assume that it's this repository's root
-cd "%BUILD_FOLDER%"
-cd ..
-
-curl -SLfs "https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz" -o "opam-%OPAM_VERSION%.tar.gz"
-tar xf "opam-%OPAM_VERSION%.tar.gz"
-
-@rem FIXME: I’m trying to reproduce the exact conditions of Opam's CI.
-move "opam-%OPAM_VERSION%" "opam"
-cd "opam"
-for /f "delims=" %%U in ('%CYG_ROOT%\bin\cygpath.exe -u %CD%') do set OPAM_BUILD_FOLDER=%%U
-
-rem Use flexdll commit bd636de.
-if "%OCAML_PORT%" neq "" patch -Np1 -i ..\ocaml-platform\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
-
-goto :EOF
-
-
-:weird_stuff
+rem Use dra27 flexdll for native ports
+if "%OCAML_PORT%" neq "" git apply appveyor.patch
 
 set INSTALLED_URL=
 for /f "tokens=3" %%U in ('findstr /C:"URL_ocaml = " src_ext\Makefile') do set OCAML_URL=%%U
@@ -141,7 +95,7 @@ if "%INSTALLED_URL%" neq "%OCAML_URL% %FLEXDLL_URL% %DEP_MODE%" if exist bootstr
   if exist src_ext\archives\nul rd /s/q src_ext\archives
 )
 
-if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
+if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
 if not exist bootstrap\installed-packages goto SkipCheck
 
 fc bootstrap\installed-packages current-lib-pkg-list > nul
@@ -149,7 +103,7 @@ if %ERRORLEVEL% equ 1 (
   echo lib-pkg packages changed:
   "%CYG_ROOT%\bin\diff.exe" bootstrap/installed-packages current-lib-pkg-list | "%CYG_ROOT%\bin\sed.exe" -ne "s/</Remove/p" -e "s/>/Add/p" | "%CYG_ROOT%\bin\gawk.exe" "BEGIN{FS="" ""}$2!=k{if(k!="""")print o==f?w:o;w=$0;k=$2;f=o=$2"" ""$3;next}{o=""Switch ""o"" --> ""$3}END{print o==f?w:o}"
   echo lib-pkg will be re-built
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
   del bootstrap\installed-packages
 ) else (
   del current-lib-pkg-list
@@ -157,10 +111,10 @@ if %ERRORLEVEL% equ 1 (
 
 :SkipCheck
 
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext cache-archives" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext cache-archives" || exit /b 1
 
 if not exist bootstrap\nul (
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make compiler" || exit /b 1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make compiler" || exit /b 1
   for /f "delims=" %%U in ('type bootstrap\installed-tarball') do echo %%U %DEP_MODE%> bootstrap\installed-tarball
   if exist bootstrap\ocaml-*.tar.gz del bootstrap\ocaml-*.tar.gz
   if "%OCAML_PORT%" neq "" if exist bootstrap\flexdll-*.tar.gz del bootstrap\flexdll-*.tar.gz
@@ -174,17 +128,18 @@ if not exist bootstrap\nul (
     md bootstrap\%%D
   )
 ) else (
-  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
-  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %OCAML_PORT%" || exit /b 1
+  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %OCAML_PORT%" || exit /b 1
 )
 
 if exist current-lib-pkg-list (
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make lib-pkg" || exit /b 1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER && make lib-pkg" || exit /b 1
   move current-lib-pkg-list bootstrap\installed-packages
 )
 
+goto :EOF
 
-:old_build
+:build
 if "%OCAML_PORT%" equ "" (
   rem make install doesn't yet work for the native Windows builds
   set POST_COMMAND=^&^& make opam-installer install
@@ -195,9 +150,26 @@ set PRIVATE_RUNTIME=
 if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $APPVEYOR_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
 goto :EOF
 
-:build
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make compiler auto && ./configure && make lib-ext && make && make install" || exit /b 1
+:test
+rem Configure Git for Windows (for the testsuite, this isn't strictly necessary
+rem as Git-for-Windows will pick up $HOME/.gitconfig for Cygwin's git)
+git config --global user.email travis@example.com
+git config --global user.name Travis
+rem Configure Cygwin's Git
+"%CYG_ROOT%\bin\bash.exe" -lc "git config --global user.email travis@example.com"
+"%CYG_ROOT%\bin\bash.exe" -lc "git config --global user.name Travis"
+set OPAMCOLOR=always
+set PATH_SHIM=
+if "%OCAML_PORT%" neq "" if "%GIT_FOR_WINDOWS%" equ "1" (
+  set PATH_SHIM=PATH=/cygdrive/c/Program\ Files/Git/cmd:$PATH
+  "C:\Program Files\Git\cmd\git.exe" config --global core.autocrlf
+  "C:\Program Files\Git\cmd\git.exe" config --global core.autocrlf true
+  "C:\Program Files\Git\cmd\git.exe" config --global core.autocrlf
+)
+"%CYG_ROOT%\bin\bash.exe" -lc "%PATH_SHIM% make -C $APPVEYOR_BUILD_FOLDER tests" || (for %%I in (%APPVEYOR_BUILD_FOLDER%\_build\default\tests\failed-*.log) do appveyor PushArtifact %%I) && exit /b 1
+rem Can't yet do an opam init with the native Windows builds
+if "%OCAML_PORT%" equ "" "%CYG_ROOT%\bin\bash.exe" -lc "make -C $APPVEYOR_BUILD_FOLDER run-appveyor-test" || exit /b 1
 goto :EOF
