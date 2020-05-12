@@ -62,12 +62,21 @@ goto :EOF
 
 
 :UpgradeCygwin
-if "%CYGWIN_INSTALL_PACKAGES%" neq "" "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
-for %%P in (%CYGWIN_COMMANDS%) do "%CYG_ROOT%\bin\bash.exe" -lc "%%P --help" > nul || set CYGWIN_UPGRADE_REQUIRED=1
-"%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
+if "%CYGWIN_INSTALL_PACKAGES%" neq "" (
+  "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
+                --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
+                --local-package-dir "%CYG_CACHE%" ^
+                --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
+)
+for %%P in (%CYGWIN_COMMANDS%) do (
+  "%CYG_ROOT%\bin\bash.exe" -lc "%%P --help" > nul || set CYGWIN_UPGRADE_REQUIRED=1
+  "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
+)
 if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   echo Cygwin package upgrade required - please go and drink coffee
-  "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
+  "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop ^
+                --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" ^
+                --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
@@ -136,7 +145,9 @@ if exist bootstrap\ocaml\lib\stdlib.cmxa (
   echo Deleting out-of-date bootstrap compiler
   rd /s/q bootstrap
 )
-if exist bootstrap\installed-tarball for /f "delims=" %%U in ('type bootstrap\installed-tarball') do set INSTALLED_URL=%%U
+if exist bootstrap\installed-tarball (
+  for /f "delims=" %%U in ('type bootstrap\installed-tarball') do set INSTALLED_URL=%%U
+)
 
 if "%INSTALLED_URL%" neq "%OCAML_URL% %FLEXDLL_URL% %DEP_MODE%" if exist bootstrap\nul (
   echo Required: %OCAML_URL% %FLEXDLL_URL% %DEP_MODE%
@@ -146,7 +157,9 @@ if "%INSTALLED_URL%" neq "%OCAML_URL% %FLEXDLL_URL% %DEP_MODE%" if exist bootstr
   if exist src_ext\archives\nul rd /s/q src_ext\archives
 )
 
-if "%DEP_MODE%" equ "lib-pkg" "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
+if "%DEP_MODE%" equ "lib-pkg" (
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext lib-pkg-urls | head -n -1 | sort | uniq" > current-lib-pkg-list
+)
 if not exist bootstrap\installed-packages goto SkipCheck
 
 fc bootstrap\installed-packages current-lib-pkg-list > nul
@@ -179,8 +192,12 @@ if not exist bootstrap\nul (
     md bootstrap\%%D
   )
 ) else (
-  if not exist bootstrap\installed-packages "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
-  if exist current-lib-pkg-list "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %OCAML_PORT%" || exit /b 1
+  if not exist bootstrap\installed-packages (
+    "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && make --no-print-directory -C src_ext reset-lib-pkg"
+  )
+  if exist current-lib-pkg-list (
+    "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && GEN_CONFIG_ONLY=1 shell/bootstrap-ocaml.sh %OCAML_PORT%" || exit /b 1
+  )
 )
 
 if exist current-lib-pkg-list (
