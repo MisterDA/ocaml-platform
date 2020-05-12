@@ -42,7 +42,7 @@ if not exist %CYG_SETUP% (
 start "Setting up Cygwin" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%"
 
 if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext
-if "%OCAML_PORT%" equ "msvc" set DEP_MODE=lib-ext
+if "%OCAML_PORT%" equ "msvc64" set DEP_MODE=lib-ext
 if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
 
 call :install
