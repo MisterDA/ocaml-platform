@@ -31,18 +31,14 @@ if "%CYG_ROOT%"   equ "" set CYG_ROOT=C:\cygwin64
 if "%CYG_CACHE%"  equ "" set CYG_CACHE="%APPDATA%\cygwin"
 if "%CYG_MIRROR%" equ "" set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
 
-if "%BUILD_FOLDER%" equ "" set BUILD_FOLDER="%CD%"
+if "%BUILD_FOLDER%" equ "" set BUILD_FOLDER=%CD%
 set CYG_SETUP="%BUILD_FOLDER%\setup-%CYG_ARCH%.exe"
 
-start /wait "%CYG_SETUP%" ^
-  --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site ^
-  --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%"
+start "Setting up Cygwin" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%"
 
 if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext
 if "%OCAML_PORT%" equ "msvc" set DEP_MODE=lib-ext
 if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
-
-if "%BUILD_FOLDER%" equ "" set BUILD_FOLDER="%CD%"
 
 call :install
 call :download_opam
@@ -63,10 +59,7 @@ goto :EOF
 
 :UpgradeCygwin
 if "%CYGWIN_INSTALL_PACKAGES%" neq "" (
-  start /wait "%CYG_SETUP%" ^
-    --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site ^
-    --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" ^
-    --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
+  start "Installing Cygwin packages" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
 )
 for %%P in (%CYGWIN_COMMANDS%) do (
   "%CYG_ROOT%\bin\bash.exe" -lc "%%P --help" > nul || set CYGWIN_UPGRADE_REQUIRED=1
@@ -74,10 +67,7 @@ for %%P in (%CYGWIN_COMMANDS%) do (
 )
 if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   echo Cygwin package upgrade required - please go and drink coffee
-  start /wait "%CYG_SETUP%" ^
-    --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site ^
-    --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" ^
-    --upgrade-also > nul
+  start "Upgrading Cygwin packages" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
@@ -92,8 +82,8 @@ rem in the list just so that the Cygwin version is always displayed on the log).
 rem CYGWIN_COMMANDS is a corresponding command to run with --version to test
 rem whether the package works. This is used to verify whether the installation
 rem needs upgrading.
-set CYGWIN_PACKAGES=cygwin make patch curl diffutils tar unzip git
-set CYGWIN_COMMANDS=cygcheck make patch curl diff tar unzip git
+set CYGWIN_PACKAGES=cygwin m4 make patch curl diffutils tar unzip git
+set CYGWIN_COMMANDS=cygcheck m4 make patch curl diff tar unzip git
 
 if "%OCAML_PORT%" equ "mingw" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-i686-gcc-g++
@@ -122,19 +112,19 @@ goto :EOF
 
 cd "%BUILD_FOLDER%"
 
-if not exists "opam-%OPAM_VERSION%.tar.gz" (
+if not exist "opam-%OPAM_VERSION%.tar.gz" (
   curl -SLfs "https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz" -o "opam-%OPAM_VERSION%.tar.gz"
   tar xf "opam-%OPAM_VERSION%.tar.gz"
-  move "opam-%OPAM_VERSION%.tar.gz" "opam"
 )
-set OPAM_BUILD_FOLDER="%BUILD_FOLDER%\opam"
+set OPAM_BUILD_FOLDER=%BUILD_FOLDER%\opam-%OPAM_VERSION%
 
 goto :EOF
 
-
 :pre_build
 
-cd "%OPAM_OPAM_BUILD_FOLDER%"
+cd "%OPAM_BUILD_FOLDER%"
+"%CYG_ROOT%\bin\bash.exe" -lc "cygpath.exe -u '%BUILD_FOLDER%\opam-%OPAM_VERSION%'" > opam-build-folder
+set /P OPAM_BUILD_FOLDER=<opam-build-folder
 
 rem Use dra27 flexdll for native ports
 if "%OCAML_PORT%" neq "" git apply appveyor.patch
