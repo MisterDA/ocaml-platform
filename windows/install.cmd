@@ -18,7 +18,7 @@
 @rem BASICALLY, DO THE TESTING IN BASH...
 
 @rem Do not call setlocal!
-@echo off
+@echo on
 
 goto %1
 
