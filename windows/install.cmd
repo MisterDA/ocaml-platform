@@ -125,7 +125,17 @@ set OPAM_BUILD_FOLDER=%BUILD_FOLDER%\opam-%OPAM_VERSION%
 
 goto :EOF
 
+
+:setup_msvc
+if "%OCAML_PORT%" neq "msvc64" goto :EOF
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+"%CYG_ROOT%\bin\bash.exe" -lc "curl -SLOfs https://raw.githubusercontent.com/ocaml/ocaml/trunk/tools/msvs-promote-path && chmod +x msvs-promote-path && grep -qxF 'eval $(./msvs-promote-path)' .bash_profile ||  echo 'eval $(./msvs-promote-path)' >> .bash_profile"
+goto :EOF
+
+
 :pre_build
+
+call :setup_msvc
 
 cd "%OPAM_BUILD_FOLDER%"
 "%CYG_ROOT%\bin\bash.exe" -lc "cygpath.exe -u '%BUILD_FOLDER%\opam-%OPAM_VERSION%'" > opam-build-folder
@@ -205,6 +215,7 @@ goto :EOF
 
 
 :build
+call :setup_msvc
 if "%OCAML_PORT%" equ "" (
   rem make install doesn't yet work for the native Windows builds
   set POST_COMMAND=^&^& make opam-installer install
