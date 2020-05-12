@@ -118,8 +118,8 @@ goto :EOF
 cd "%BUILD_FOLDER%"
 
 if not exist "opam-%OPAM_VERSION%.tar.gz" (
-  curl -SLfs "https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz" -o "opam-%OPAM_VERSION%.tar.gz"
-  tar xf "opam-%OPAM_VERSION%.tar.gz"
+  "%CYG_ROOT%\bin\bash.exe" -lc "curl -SLfs 'https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz' -o 'opam-%OPAM_VERSION%.tar.gz'"
+  "%CYG_ROOT%\bin\bash.exe" -lc "tar xf 'opam-%OPAM_VERSION%.tar.gz'"
 )
 set OPAM_BUILD_FOLDER=%BUILD_FOLDER%\opam-%OPAM_VERSION%
 
