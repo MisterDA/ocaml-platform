@@ -34,6 +34,11 @@ if "%CYG_MIRROR%" equ "" set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cyg
 if "%BUILD_FOLDER%" equ "" set BUILD_FOLDER=%CD%
 set CYG_SETUP="%BUILD_FOLDER%\setup-%CYG_ARCH%.exe"
 
+if not exist %CYG_SETUP% (
+  @rem Windows 7 and up
+  @rem https://superuser.com/questions/25538/how-to-download-files-from-command-line-in-windows-like-wget-is-doing
+  bitsadmin /transfer downloadCygwin /download /priority normal https://cygwin.com/setup-%CYG_ARCH%.exe %CYG_SETUP%
+)
 start "Setting up Cygwin" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%"
 
 if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext

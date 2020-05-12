@@ -46,18 +46,14 @@ Download and run our installer for Windows x86_64.
 Build from source
 +++++++++++++++++
 
-This procedure requires an Internet connection. In a Windows system,
-download `the Cygwin installer
-<https://www.cygwin.com/setup-x86_64.exe>`__. Download and extract
+This procedure requires an Internet connection. Download and extract
 this repository's `archive
-<https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__ *in
-the same location* (e.g., ``C:\Users\User\Download``) as where you
-downloaded Cygwin's installer.
+<https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__.
 
-Open a ``cmd.exe``, and ``cd`` to this directory. Then, tune the
-environment variables:
+Open as **administrator** a ``cmd.exe``, and ``cd`` to this directory.
+Then, tune the environment variables:
 
-.. code:: cmd
+.. code:: bat
 
    @rem Any git ref will work
    @rem To select a custom repo, edit the URLs in windows/install.cmd
@@ -67,15 +63,7 @@ environment variables:
    @rem Choose between "" (cygwin native) "mingw64" "msvc64"
    set OCAML_PORT=mingw64
    
-   @rem Optionaly customize those variables
-   set CYG_ARCH=x86_64
-   set CYG_ROOT=C:\cygwin64
-   set CYG_CACHE="%APPDATA%\cygwin"
-   set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
-   
-   @rem Set the build folder and call the build script
-   set BUILD_FOLDER="%CD%\ocaml-platform-master"
-   call "%BUILD_FOLDER%\windows\install.cmd" all
+   call windows\install.cmd all
 
 macOS
 ~~~~~
