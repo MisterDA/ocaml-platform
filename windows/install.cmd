@@ -127,9 +127,14 @@ goto :EOF
 
 
 :setup_msvc
-if "%OCAML_PORT%" neq "msvc64" goto :EOF
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
-"%CYG_ROOT%\bin\bash.exe" -lc "curl -SLOfs https://raw.githubusercontent.com/ocaml/ocaml/trunk/tools/msvs-promote-path && chmod +x msvs-promote-path && grep -qxF 'eval $(./msvs-promote-path)' .bash_profile ||  echo 'eval $(./msvs-promote-path)' >> .bash_profile"
+@rem Using MSVC and the environment hasn't been set up
+if "%OCAML_PORT%" equ "msvc64" (
+  if "%VSCMD_VCVARSALL_INIT%" neq 1 (
+    if "%VSINSTALLDIR%" equ "" set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
+    call "'%VSINSTALLDIR%"\VC\Auxiliary\Build\vcvars64.bat
+  )
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && ./msvc-setup.sh"
+)
 goto :EOF
 
 

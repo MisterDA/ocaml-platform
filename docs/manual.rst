@@ -1,5 +1,5 @@
 OCaml Platform
-==============
+##############
 
 .. image:: https://ci.appveyor.com/api/projects/status/ipf529j5j0vwy5q7?svg=true
    :target: https://ci.appveyor.com/project/MisterDA/ocaml-platform
@@ -17,10 +17,10 @@ Package Manager), and a set of curated `OCaml packages
 .. contents::
 
 Installation
-------------
+************
 
 Linux
-~~~~~
+=====
 
 Check if your distribution has an ``ocaml-platform`` package; if so,
 install it! Otherwise, the following script installs the OCaml Platform
@@ -33,10 +33,10 @@ into ``/opt/ocaml-platform`` and updates your shell.
 *Coming soon!*
 
 Windows
-~~~~~~~
+=======
 
 Installers
-++++++++++
+----------
 
 Download and run our installer for Windows x86_64.
 
@@ -44,13 +44,27 @@ Download and run our installer for Windows x86_64.
 
 
 Build from source
-+++++++++++++++++
+-----------------
+
+msvc64
+  Have a standard working installation of Visual Studio, and
+  `installed C++ support in Visual Studio
+  <https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=vs-2019>`__.
+
+mingw64,native-cygwin
+  No prerequisites.
 
 This procedure requires an Internet connection. Download and extract
 this repository's `archive
 <https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__.
 
 Open as **administrator** a ``cmd.exe``, and ``cd`` to this directory.
+
+If you’re using MSVC and have installed Visual Studio in a
+non-standard location, or are using an edition other than VS 2019,
+then set the `VSINSTALLDIR` variable to the installation location (by
+default, ``C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\``).
+
 Then, tune the environment variables:
 
 .. code:: bat
@@ -61,12 +75,12 @@ Then, tune the environment variables:
    set OPAM_VERSION=2.1.0-alpha
    
    @rem Choose between "" (cygwin native) "mingw64" "msvc64"
-   set OCAML_PORT=mingw64
+   set OCAML_PORT=msvc64
    
    call windows\install.cmd all
 
 macOS
-~~~~~
+=====
 
 The following script installs the OCaml Platform into
 ``/opt/ocaml-platform`` and updates your shell.
@@ -77,8 +91,38 @@ The following script installs the OCaml Platform into
 
 *Coming soon!*
 
+Using the OCaml Platform
+************************
+
+Windows (MSVC)
+==============
+
+In the following, we’ll assume that ``CYG_ROOT`` is the root directory
+of the Cygwin environment.
+
+To run interactive **Unix shell** scripts in the OCaml Platform, open
+``%CYG_ROOT%\bin\mintty.bat`` (recommended) or
+``%CYG_ROOT%\Cygwin.bat``.
+
+To run interactive **Windows scripts** (i.e., cmd or PowerShell), load
+the MSVC environment first (replace with the path to your installation
+of Visual Studio):
+
+.. code:: bat
+
+   if "%VSCMD_VCVARSALL_INIT%" neq 1 (
+     if not defined "%VSINSTALLDIR%" set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
+     call "'%VSINSTALLDIR%"\VC\Auxiliary\Build\vcvars64.bat
+   )
+
+Unix scripts should be executed from a login shell, e.g.:
+
+.. code:: bat
+
+   "%CYG_ROOT%\bin\bash.exe" -lc "script.bash"
+
 Roadmap
--------
+*******
 
 #. Finish the complete (but experimental) build of the platform for
    all supported systems.
