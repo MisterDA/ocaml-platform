@@ -3,19 +3,30 @@
 set -eu
 
 # $1: path to CYG_ROOT, in Windows format
-# $2: path to vcvars64.bat, in Windows format
 
 cyg_root_win=$1
 cyg_root_nix="$(cygpath -u "$cyg_root_win")"
-vcvars64=$2
+r=$'\r'
+
+# https://renenyffenegger.ch/notes/development/tools/scripts/personal/vsenv_bat
+vsenv_bat() {
+    cat <<EOF
+if not defined VSCMD_VER if not defined VSWHERE set VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere"$r
+if not defined VSCMD_VER for /f "usebackq delims=#" %%a in (\`"%VSWHERE%" -latest -property installationPath\`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat$r
+if not defined VSCMD_VER ($r
+  "%VsDevCmd_Path%" -arch=amd64$r
+  set VsDevCmd_Path=$r
+  set VSWHERE=$r
+)$r
+EOF
+}
 
 cygwin_bat() {
     grep -qxF 'VSCMD_VCVARSALL_INIT' "${cyg_root_nix}Cygwin.bat" && return
 
     {
         head -n-1 "${cyg_root_nix}Cygwin.bat";
-        echo -n 'if "%VSCMD_VCVARSALL_INIT%" neq 1 call ' "\"${vcvars64}\"";
-        echo -ne '\r\n';
+        vsenv_bat
         tail -n1 "${cyg_root_nix}Cygwin.bat";
     } > Cygwin.bat
     mv Cygwin.bat "${cyg_root_nix}Cygwin.bat"
@@ -23,11 +34,15 @@ cygwin_bat() {
 
 mintty_bat() {
     if [ -e "${cyg_root_nix}bin/mintty.bat" ]; then return; fi
-    r=$'\r'
-    cat > "${cyg_root_nix}bin/mintty.bat" <<EOF
+
+    {
+        cat <<EOF
 @echo off$r
-if %VSCMD_VCVARSALL_INIT% neq 1 call "$vcvars64"$r
+$(vsenv_bat)
 $cyg_root_win\\bin\\mintty.exe -i $cyg_root_win\\Cygwin.ico -$r
+EOF
+    } > "${cyg_root_nix}bin/mintty.bat" <<EOF
+
 EOF
 }
 

@@ -52,9 +52,9 @@ msvc64
   <https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=vs-2019>`__.
 
   If you have installed Visual Studio in a non-standard location, or
-  are using an edition other than VS 2019, then set the
-  ``VSINSTALLDIR`` variable to the installation location (by default,
-  ``C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\``)
+  are using an edition other than VS 2019, then set the ``VSWHERE``
+  variable to the location of ``wswhere``. (by default,
+  ``%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere``)
   before running the install script.
 
 mingw64,cygwin-native

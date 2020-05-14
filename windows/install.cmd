@@ -127,12 +127,15 @@ goto :EOF
 
 :setup_msvc
 @rem Using MSVC and the environment hasn't been set up
+if "%OCAML_PORT%" equ "msvc64" if not defined VSCMD_VER if not defined VSWHERE (
+  set VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere"
+)
+if "%OCAML_PORT%" equ "msvc64" if not defined VSCMD_VER (
+  for /f "usebackq delims=#" %%a in (`%VSWHERE% -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
+)
 if "%OCAML_PORT%" equ "msvc64" (
-  if "%VSCMD_VCVARSALL_INIT%" neq 1 (
-    if not defined VSINSTALLDIR set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
-    call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvars64.bat"
-  )
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && ./windows/msvc-setup.sh '%CYG_ROOT%' '%VSINSTALLDIR%\VC\Auxiliary\Build\vcvars64.bat'"
+   if not defined VSCMD_VER "%VsDevCmd_Path%" -arch=amd64
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && ./windows/msvc-setup.sh '%CYG_ROOT%'"
 )
 goto :EOF
 
