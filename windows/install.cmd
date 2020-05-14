@@ -118,16 +118,10 @@ goto :EOF
 
 
 :download_opam
-
 cd "%BUILD_FOLDER%"
-
-if not exist "opam-%OPAM_VERSION%.tar.gz" (
-  "%CYG_ROOT%\bin\bash.exe" -lc "curl -SLfs 'https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz' -o 'opam-%OPAM_VERSION%.tar.gz'"
-  "%CYG_ROOT%\bin\bash.exe" -lc "tar xf 'opam-%OPAM_VERSION%.tar.gz'"
-  move "opam-%OPAM_VERSION%" "opam"
-)
+if not exist "opam-%OPAM_VERSION%.tar.gz" "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && curl -SLfs 'https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz' -o 'opam-%OPAM_VERSION%.tar.gz'"
+"%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && tar xf 'opam-%OPAM_VERSION%.tar.gz' --one-top-level=opam --strip-components=1"
 set OPAM_BUILD_FOLDER=%BUILD_FOLDER%\opam
-
 goto :EOF
 
 
