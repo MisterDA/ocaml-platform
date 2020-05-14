@@ -11,11 +11,11 @@ environment:
     OCAML_VERSION: 4.10.0
     OPAM_VERSION: def89fc4fc1af53bf1f8d420129abc398751cd6c
   matrix:
-    - OCAML_PORT: mingw64
-      DEP_MODE: lib-pkg
-      WINDOWS: yes
     - OCAML_PORT: msvc64
       DEP_MODE: lib-ext
+      WINDOWS: yes
+    - OCAML_PORT: mingw64
+      DEP_MODE: lib-pkg
       WINDOWS: yes
     - OCAML_PORT:
       DEP_MODE: lib-ext
