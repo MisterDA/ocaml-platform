@@ -36,3 +36,7 @@ msvs_promote_path() {
     chmod +x ~/.msvs-promote-path
     grep -qxF 'eval $(./.msvs-promote-path)' ~/.bash_profile || echo 'eval $(./.msvs-promote-path)' >> ~/.bash_profile
 }
+
+cygwin_bat
+mintty_bat
+msvs_promote_path

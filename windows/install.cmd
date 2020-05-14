@@ -136,9 +136,9 @@ goto :EOF
 if "%OCAML_PORT%" equ "msvc64" (
   if "%VSCMD_VCVARSALL_INIT%" neq 1 (
     if not defined VSINSTALLDIR set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
-    call "%VSINSTALLDIR%"\VC\Auxiliary\Build\vcvars64.bat
+    call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvars64.bat"
   )
-  "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && ./msvc-setup.sh"
+  "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && ./windows/msvc-setup.sh '%CYG_ROOT%' '%VSINSTALLDIR%\VC\Auxiliary\Build\vcvars64.bat'"
 )
 goto :EOF
 
