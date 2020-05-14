@@ -151,8 +151,7 @@ cd "%OPAM_BUILD_FOLDER%"
 "%CYG_ROOT%\bin\bash.exe" -lc "cygpath.exe -u '%BUILD_FOLDER%\opam'" > opam-build-folder
 set /P OPAM_BUILD_FOLDER=<opam-build-folder
 
-rem Use dra27 flexdll for native ports
-if "%OCAML_PORT%" neq "" git apply appveyor.patch
+if "%OCAML_PORT%" neq "" patch -Np1 -i ..\windows\0001-Use-alainfrisch-flexdll-bd636de.patch
 
 set INSTALLED_URL=
 for /f "tokens=3" %%U in ('findstr /C:"URL_ocaml = " src_ext\Makefile') do set OCAML_URL=%%U
