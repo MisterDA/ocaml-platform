@@ -26,12 +26,12 @@ goto :EOF
 
 :all
 
-if "%CYG_ARCH%"   equ "" set CYG_ARCH=x86_64
-if "%CYG_ROOT%"   equ "" set CYG_ROOT=C:\cygwin64
-if "%CYG_CACHE%"  equ "" set CYG_CACHE="%APPDATA%\cygwin"
-if "%CYG_MIRROR%" equ "" set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
+if not defined CYG_ARCH set CYG_ARCH=x86_64
+if not defined CYG_ROOT set CYG_ROOT=C:\cygwin64
+if not defined CYG_CACHE set CYG_CACHE="%APPDATA%\cygwin"
+if not defined CYG_MIRROR set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
 
-if "%BUILD_FOLDER%" equ "" set BUILD_FOLDER=%CD%
+if not defined BUILD_FOLDER set BUILD_FOLDER=%CD%
 set CYG_SETUP="%BUILD_FOLDER%\setup-%CYG_ARCH%.exe"
 
 if not exist %CYG_SETUP% (
@@ -131,8 +131,8 @@ goto :EOF
 @rem Using MSVC and the environment hasn't been set up
 if "%OCAML_PORT%" equ "msvc64" (
   if "%VSCMD_VCVARSALL_INIT%" neq 1 (
-    if "%VSINSTALLDIR%" equ "" set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
-    call "'%VSINSTALLDIR%"\VC\Auxiliary\Build\vcvars64.bat
+    if not defined VSINSTALLDIR set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
+    call "%VSINSTALLDIR%"\VC\Auxiliary\Build\vcvars64.bat
   )
   "%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && ./msvc-setup.sh"
 )
