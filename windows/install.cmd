@@ -26,6 +26,14 @@ goto :EOF
 
 :all
 
+if "%OCAML_PORT%" equ "" ( set DEP_MODE=lib-ext
+) else if "%OCAML_PORT%" equ "msvc64" ( set DEP_MODE=lib-ext
+) else if "%OCAML_PORT%" equ "mingw64" ( set DEP_MODE=lib-pkg
+) else (
+  echo "Unsupported OCAML_PORT=%OCAML_PORT%."
+  goto :EOF
+)
+
 if not defined CYG_ARCH set CYG_ARCH=x86_64
 if not defined CYG_ROOT set CYG_ROOT=C:\cygwin64
 if not defined CYG_CACHE set CYG_CACHE="%APPDATA%\cygwin"
@@ -40,10 +48,6 @@ if not exist %CYG_SETUP% (
   bitsadmin /transfer downloadCygwin /download /priority normal https://cygwin.com/setup-%CYG_ARCH%.exe %CYG_SETUP%
 )
 start "Setting up Cygwin" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%"
-
-if "%OCAML_PORT%" equ "" set DEP_MODE=lib-ext
-if "%OCAML_PORT%" equ "msvc64" set DEP_MODE=lib-ext
-if "%OCAML_PORT%" equ "mingw64" set DEP_MODE=lib-pkg
 
 call :install
 call :download_opam
