@@ -51,7 +51,13 @@ msvc64
   `installed C++ support in Visual Studio
   <https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=vs-2019>`__.
 
-mingw64,native-cygwin
+  If you have installed Visual Studio in a non-standard location, or
+  are using an edition other than VS 2019, then set the
+  ``VSINSTALLDIR`` variable to the installation location (by default,
+  ``C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\``)
+  before running the install script.
+
+mingw64,cygwin-native
   No prerequisites.
 
 This procedure requires an Internet connection. Download and extract
@@ -60,17 +66,12 @@ this repository's `archive
 
 Open as **administrator** a ``cmd.exe``, and ``cd`` to this directory.
 
-If you’re using MSVC and have installed Visual Studio in a
-non-standard location, or are using an edition other than VS 2019,
-then set the `VSINSTALLDIR` variable to the installation location (by
-default, ``C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\``).
-
 Then, tune the environment variables:
 
 .. code:: bat
 
    @rem Any git ref will work
-   @rem To select a custom repo, edit the URLs in windows/install.cmd
+   @rem To select a custom Opam repo, edit the URLs in windows/install.cmd
    set OCAML_VERSION=4.10.0
    set OPAM_VERSION=2.1.0-alpha
    
