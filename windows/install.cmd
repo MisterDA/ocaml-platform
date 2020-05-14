@@ -120,8 +120,9 @@ cd "%BUILD_FOLDER%"
 if not exist "opam-%OPAM_VERSION%.tar.gz" (
   "%CYG_ROOT%\bin\bash.exe" -lc "curl -SLfs 'https://github.com/ocaml/opam/archive/%OPAM_VERSION%.tar.gz' -o 'opam-%OPAM_VERSION%.tar.gz'"
   "%CYG_ROOT%\bin\bash.exe" -lc "tar xf 'opam-%OPAM_VERSION%.tar.gz'"
+  move "opam-%OPAM_VERSION%" "opam"
 )
-set OPAM_BUILD_FOLDER=%BUILD_FOLDER%\opam-%OPAM_VERSION%
+set OPAM_BUILD_FOLDER=%BUILD_FOLDER%\opam
 
 goto :EOF
 
@@ -143,7 +144,7 @@ goto :EOF
 call :setup_msvc
 
 cd "%OPAM_BUILD_FOLDER%"
-"%CYG_ROOT%\bin\bash.exe" -lc "cygpath.exe -u '%BUILD_FOLDER%\opam-%OPAM_VERSION%'" > opam-build-folder
+"%CYG_ROOT%\bin\bash.exe" -lc "cygpath.exe -u '%BUILD_FOLDER%\opam'" > opam-build-folder
 set /P OPAM_BUILD_FOLDER=<opam-build-folder
 
 rem Use dra27 flexdll for native ports
