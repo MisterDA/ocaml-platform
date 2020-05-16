@@ -2,7 +2,7 @@
 
 set -eu
 
-if [ -z "${PREFIX_NAME-}" ]; then PREFIX_NAME='OCamlPlatform'; fi
+if [ -z "${OCAML_PLATFORM_NAME-}" ]; then OCAML_PLATFORM_NAME='OCamlPlatform'; fi
 
 if [ -z "${OPAM_REPO-}" ]; then
     OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
@@ -45,9 +45,9 @@ environment() {
     fi
 
     if [ "$HOST_SYSTEM" = linux ]; then
-        if [ -z "${PREFIX-}" ]; then PREFIX="/opt/$PREFIX_NAME"; export PREFIX; fi
+        if [ -z "${PREFIX-}" ]; then PREFIX="/opt/$OCAML_PLATFORM_NAME"; export PREFIX; fi
     elif [ "$HOST_SYSTEM" = macos ]; then
-        if [ -z "${PREFIX-}" ]; then PREFIX="/Applications/$PREFIX_NAME"; export PREFIX; fi
+        if [ -z "${PREFIX-}" ]; then PREFIX="/Applications/$OCAML_PLATFORM_NAME"; export PREFIX; fi
     fi
 
     if [ "$HOST_SYSTEM" = linux ] || [ "$HOST_SYSTEM" = macos ]; then
