@@ -39,6 +39,9 @@ if not defined CYG_ROOT set CYG_ROOT=C:\cygwin64
 if not defined CYG_CACHE set CYG_CACHE="%APPDATA%\cygwin"
 if not defined CYG_MIRROR set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
 
+net file 1>nul 2>nul
+if '%errorlevel%' == '0' ( set CYG_ADMIN= ) else ( set CYG_ADMIN=--no-admin )
+
 if not defined BUILD_FOLDER set BUILD_FOLDER=%CD%
 set CYG_SETUP="%BUILD_FOLDER%\setup-%CYG_ARCH%.exe"
 
@@ -47,7 +50,7 @@ if not exist %CYG_SETUP% (
   @rem https://superuser.com/questions/25538/how-to-download-files-from-command-line-in-windows-like-wget-is-doing
   bitsadmin /transfer downloadCygwin /download /priority normal https://cygwin.com/setup-%CYG_ARCH%.exe %CYG_SETUP%
 )
-start "Setting up Cygwin" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%"
+start "Setting up Cygwin" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" %CYG_ADMIN%
 
 call :install
 call :download_opam
@@ -68,7 +71,7 @@ goto :EOF
 
 :UpgradeCygwin
 if "%CYGWIN_INSTALL_PACKAGES%" neq "" (
-  start "Installing Cygwin packages" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% > nul
+  start "Installing Cygwin packages" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages %CYGWIN_INSTALL_PACKAGES:~1% %CYG_ADMIN% > nul
 )
 for %%P in (%CYGWIN_COMMANDS%) do (
   "%CYG_ROOT%\bin\bash.exe" -lc "%%P --help" > nul || set CYGWIN_UPGRADE_REQUIRED=1
@@ -76,7 +79,7 @@ for %%P in (%CYGWIN_COMMANDS%) do (
 )
 if %CYGWIN_UPGRADE_REQUIRED% equ 1 (
   echo Cygwin package upgrade required - please go and drink coffee
-  start "Upgrading Cygwin packages" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also > nul
+  start "Upgrading Cygwin packages" /wait "%CYG_SETUP%" --quiet-mode --no-shortcuts --no-startmenu --no-desktop --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --upgrade-also %CYG_ADMIN% > nul
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %CYGWIN_PACKAGES%"
 )
 goto :EOF
