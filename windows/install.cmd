@@ -227,10 +227,7 @@ goto :EOF
 
 :build
 call :setup_msvc
-if "%OCAML_PORT%" equ "" (
-  rem make install doesn't yet work for the native Windows builds
-  set POST_COMMAND=^&^& make opam-installer install
-)
+set POST_COMMAND=^&^& make opam-installer install
 set LIB_EXT=
 if "%DEP_MODE%" equ "lib-ext" set LIB_EXT=^&^& make lib-ext
 set PRIVATE_RUNTIME=
@@ -238,7 +235,6 @@ if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
 "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure --prefix='%PREFIX%' %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && mkdir -p '%PREFIX%' && make install"
 goto :EOF
 
 
