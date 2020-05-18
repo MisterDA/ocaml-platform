@@ -57,6 +57,7 @@ call :install
 call :download_opam
 call :pre_build
 call :build
+call :ocaml_platform
 
 goto :EOF
 
@@ -237,6 +238,12 @@ if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
 "%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure --prefix='%PREFIX%' %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+goto :EOF
+
+
+:ocaml_platform
+call :setup_msvc
+"%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && windows/build.sh"
 goto :EOF
 
 

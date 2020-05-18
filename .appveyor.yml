@@ -57,6 +57,7 @@ for:
     build_script:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" pre_build
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" build
+      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" ocaml_platform
     cache:
       - '%CYG_CACHE%'
       - '%APPVEYOR_BUILD_FOLDER%\opam-%OPAM_VERSION%.tar.gz'
