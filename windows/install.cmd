@@ -38,7 +38,7 @@ if not defined CYG_ARCH set CYG_ARCH=x86_64
 if not defined CYG_ROOT set CYG_ROOT=C:\cygwin64
 if not defined CYG_CACHE set CYG_CACHE="%APPDATA%\cygwin"
 if not defined CYG_MIRROR set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
-if not defined PREFIX set PREFIX=/opt/%OCAML_PLATFORM_NAME%
+if not defined PREFIX set PREFIX=%CYG_ROOT%\opt\%OCAML_PLATFORM_NAME%
 
 net file 1>nul 2>nul
 if '%errorlevel%' == '0' ( set CYG_ADMIN= ) else ( set CYG_ADMIN=--no-admin )

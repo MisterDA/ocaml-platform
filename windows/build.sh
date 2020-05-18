@@ -17,15 +17,13 @@ command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
 
 download_file() { curl -SLfs "$1" -o "$2"; }
 
-PREFIX="$(cygpath -m "${CYG_ROOT}${PREFIX}")"; export PREFIX
+if [ -z "${PREFIX}" ]; then echo >&2 "Define PREFIX."; exit 1; fi
 PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
 
 if [ "$VERBOSE" = yes ]; then
     V=1; export V # Make
     DUNE_ARGS='--verbose'; export DUNE_ARGS
     OPAMVERBOSE=1; export OPAMVERBOSE
-    env | sort
-    # set -o xtrace
 fi
 
 eval_opam_env() {
