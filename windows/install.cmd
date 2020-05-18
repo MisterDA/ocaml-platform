@@ -96,8 +96,8 @@ rem in the list just so that the Cygwin version is always displayed on the log).
 rem CYGWIN_COMMANDS is a corresponding command to run with --version to test
 rem whether the package works. This is used to verify whether the installation
 rem needs upgrading.
-set CYGWIN_PACKAGES=cygwin m4 make patch curl diffutils tar unzip git
-set CYGWIN_COMMANDS=cygcheck m4 make patch curl diff tar unzip git
+set CYGWIN_PACKAGES=cygwin m4 make patch curl diffutils tar unzip git dos2unix
+set CYGWIN_COMMANDS=cygcheck m4 make patch curl diff tar unzip git dos2unix
 
 if "%OCAML_PORT%" equ "mingw" (
   set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-i686-gcc-g++
