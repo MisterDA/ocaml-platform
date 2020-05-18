@@ -38,6 +38,7 @@ if not defined CYG_ARCH set CYG_ARCH=x86_64
 if not defined CYG_ROOT set CYG_ROOT=C:\cygwin64
 if not defined CYG_CACHE set CYG_CACHE="%APPDATA%\cygwin"
 if not defined CYG_MIRROR set CYG_MIRROR=http://mirrors.kernel.org/sourceware/cygwin/
+if not defined PREFIX set PREFIX=/opt/%OCAML_PLATFORM_NAME%
 
 net file 1>nul 2>nul
 if '%errorlevel%' == '0' ( set CYG_ADMIN= ) else ( set CYG_ADMIN=--no-admin )
@@ -235,7 +236,7 @@ set PRIVATE_RUNTIME=
 if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER %LIB_PKG% && ./configure --prefix='%PREFIX%' %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
 goto :EOF
 
 
