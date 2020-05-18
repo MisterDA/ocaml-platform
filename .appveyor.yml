@@ -51,6 +51,7 @@ for:
       CYG_CACHE: '%APPDATA%\cygwin'
       CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
       BUILD_FOLDER: '%APPVEYOR_BUILD_FOLDER%'
+      PREFIX: '/opt/%OCAML_PLATFORM_NAME%'
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" download_opam
