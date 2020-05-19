@@ -226,14 +226,14 @@ goto :EOF
 
 :build
 call :setup_msvc
-set POST_COMMAND=^&^& make opam-installer install
+set POST_COMMAND=make opam-installer install
 set LIB_EXT=
-if "%DEP_MODE%" equ "lib-ext" set LIB_EXT=^&^& make lib-ext
+if "%DEP_MODE%" equ "lib-ext" set LIB_EXT=make lib-ext
 set PRIVATE_RUNTIME=
 if "%OCAML_PORT:~0,5%" equ "mingw" set PRIVATE_RUNTIME=--with-private-runtime
 set WITH_MCCS=--with-mccs
 if "%DEP_MODE%" equ "lib-pkg" set WITH_MCCS=
-"%CYG_ROOT%\bin\bash.exe" -lc "cd $OPAM_BUILD_FOLDER && OCAMLLIB=""$(cygpath -m '%CYG_ROOT%\opt\%OCAML_PLATFORM_NAME%\opam\default\lib\ocaml')"" && export OCAMLLIB %LIB_PKG% && ./configure --prefix=""$(cygpath -u '%CYG_ROOT%\opt\%OCAML_PLATFORM_NAME%')"" %PRIVATE_RUNTIME% %WITH_MCCS% %LIB_EXT% && make opam %POST_COMMAND%" || exit /b 1
+"%CYG_ROOT%\bin\bash.exe" -lc "cd ""$(cygpath -u '%BUILD_FOLDER%')"" && windows/build-opam.sh"
 goto :EOF
 
 
