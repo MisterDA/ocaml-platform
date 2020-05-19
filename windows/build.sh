@@ -6,6 +6,10 @@ if [ -z "${OPAM_REPO-}" ]; then
     OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
 
+if [ -z "${FLEXDLL_VERSION-}" ]; then
+    FLEXDLL_VERSION=bd636def70d941674275b2f4b6c13a34ba23f9c9
+fi
+
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 
 if [ -z "${VERBOSE-}" ]; then VERBOSE=no; fi
@@ -38,6 +42,18 @@ eval_opam_env() {
     OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH
     MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH
     PATH="$(cygpath -p "$PATH")"; export PATH
+}
+
+build_flexdll() {
+    download_file "https://github.com/alainfrisch/flexdll/archive/${FLEXDLL_VERSION}.tar.gz" "flexdll-${FLEXDLL_VERSION}.tar.gz"
+    tar xf "flexdll-${FLEXDLL_VERSION}.tar.gz"
+    cd "flexdll-${FLEXDLL_VERSION}" || exit
+
+    OLDPATH="$PATH"
+    PATH="$OPAM_BUILD_FOLDER/bootstrap/ocaml/bin:$PATH"; export PATH
+    make CHAINS="msvc64"
+    make install PREFIX="/"
+    PATH="$OLDPATH"; export PATH
 }
 
 build_ocaml_platform() {
@@ -78,5 +94,6 @@ artifacts() {
     fi
 }
 
+build_flexdll
 build_ocaml_platform
 artifacts
