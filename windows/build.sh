@@ -17,8 +17,10 @@ command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
 
 download_file() { curl -SLfs "$1" -o "$2"; }
 
+echo "=====" "$CYG_ROOT" "===="
+
 if [ -z "${PREFIX-}" ]; then
-    PREFIX="$(cygpath -u "$CYG_ROOT")/opt/$OCAML_PLATFORM_NAME"
+    PREFIX="$(cygpath -u "$CYG_ROOT")opt/$OCAML_PLATFORM_NAME"
 fi
 PATH="$(cygpath -u "${PREFIX}/bin"):$PATH"; export PATH
 
