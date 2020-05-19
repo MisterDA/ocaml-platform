@@ -6,7 +6,7 @@ git:
 env:
   global:
     - OCAML_VERSION: 4.10.0
-    - OPAM_VERSION: def89fc4fc1af53bf1f8d420129abc398751cd6c
+    - OPAM_VERSION: e99250505f5c12ae93d494b21c0a3f5ecdbc405f
 
 jobs:
   include:
