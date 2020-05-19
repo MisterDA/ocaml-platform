@@ -43,10 +43,18 @@ eval_opam_env() {
 build_ocaml_platform() {
     cd "$PREFIX" || exit
 
-    OPAMROOT="$(cygpath -w "${PREFIX}/opam")"; export OPAMROOT
+    OPAMROOT="$(cygpath -m "${PREFIX}/opam")"; export OPAMROOT
     OPAMSWITCH=default; export OPAMSWITCH
+    MAKEFLAGS=-j$(nproc); export MAKEFLAGS
 
-    opam init -a --disable-sandboxing -y "$OPAM_REPO"
+    echo "$PREFIX"
+
+    OCAMLLIB="$(cygpath -m "${PREFIX}/opam/ocaml-base-compiler.4.10.0/lib/ocaml")"; export OCAMLLIB
+    echo "$OCAMLLIB"
+
+    opam init -y -a --disable-sandboxing \
+         -c "ocaml-base-compiler.${OCAML_VERSION}" \
+         "$OPAM_REPO"
 
     eval_opam_env
 
