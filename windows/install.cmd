@@ -135,7 +135,7 @@ if "%OCAML_PORT%" equ "msvc64" if not defined VSCMD_VER if not defined VSWHERE (
   set VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere"
 )
 if "%OCAML_PORT%" equ "msvc64" if not defined VSCMD_VER (
-  for /f "usebackq delims=#" %%a in (`%VSWHERE% -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
+  for /f "usebackq delims=#" %%a in (`%VSWHERE% -all -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
 )
 if "%OCAML_PORT%" equ "msvc64" (
    if not defined VSCMD_VER "%VsDevCmd_Path%" -arch=amd64
