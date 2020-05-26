@@ -134,7 +134,7 @@ Roadmap
    - ☑ Linux
    - ☑ macOS
 
-#. Enable build artifacts of the platform.
+#. Enable build artefacts of the platform.
 
    - ☐ Windows.
    - ☐ Travis CI.
@@ -164,3 +164,89 @@ Roadmap
    - Release model.
 
 #. Write documentation for the users.
+
+Guidelines for OCaml packages
+*****************************
+
+The OCaml Platform intends to be a set of useful, portable,
+documented, tested, and maintained packages. A library or a tool
+satisfying these goals can be a good candidate for inclusion in the
+platform.
+
+The rules also apply to the dependencies of the package seeking
+inclusion. They must stand the same level of quality, since they are
+also going to be distributed.
+
+The requirements are as follow:
+
+Usefulness
+  - The package should be useful.
+  - The package should not duplicate features already provided by
+    another package included in the Platform.
+
+Licence
+  - The package must be licensed under a free software licence or an
+    open source licence.
+
+Build system
+  - the package must use the `Dune build system
+    <https://dune.build/>`__;
+  - the package should not use any build system other than Dune;
+
+Opam integration
+  - the package must already exist in the `Opam repository
+    <https://github.com/ocaml/opam-repository>__`;
+  - the package must use Dune features for `generating opam files
+    <https://dune.readthedocs.io/en/stable/opam.html#generating-opam-files>`__;
+  - the source repository should not contain an existing opam file.
+
+Portability
+  - The package must be portable and usable in all supported systems
+    of the OCaml Platform.
+  - If some fundamental features are not provided on a system
+    supported by the Platform, graceful exit or an abstraction layer
+    are expected.
+
+Documentation
+  - The package must follow the `odig conventions
+    <https://erratique.ch/software/odig>`__.
+  - Documentation must be generatable from the sources in the standard
+    way.
+  - The package must not apply custom styling to the generated
+    documentation.
+
+Tests
+  - The package must have at least one integration test. For a tool, a
+    help or a version check could be enough. For a library, a simple
+    test asserting that linking with the library works and that the
+    basic features are available could be enough.
+  - The tests must be runnable from the sources in the standard way.
+
+Versioning
+  - The package should use semantic versioning.
+
+External dependencies
+  - The external dependencies (e.g., C libraries called through the
+    FFI) must be either installable through the Opam-depext mechanism,
+    or vendored with the package and compilable with the standard set
+    of tools used by the Plaform.
+
+Inclusion process
+*****************
+
+The process for package inclusion (or exclusion) is still to be
+determined.
+
+An idea is to start with a set of the most widely used Opam packages.
+
+Release model
+*************
+
+The OCaml Platform follows the release of the OCaml compiler. It is
+released exactly one month after the release of the compiler.
+Maintainers that have not updated their packages will be publicly
+mocked and shamed.
+
+Once released, the OCaml Platform is frozen and no new features or
+bug fixes are accepted until the next release. This rule may be
+amended.

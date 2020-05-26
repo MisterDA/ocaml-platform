@@ -12,7 +12,7 @@ OCaml Platform
 OCaml Platform is a distribution of the `OCaml <https://ocaml.org/>`__
 compiler and runtime, `Opam <https://opam.ocaml.org/>`__ (OCaml
 Package Manager), and a set of curated `OCaml packages
-<./ocaml-platform.opam>`__, easily installable on multiple platforms.
+<./ocaml-platform.opam>`__, easily installable on multiple systems.
 
 .. contents::
 
