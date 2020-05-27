@@ -9,7 +9,10 @@ environment:
     ARTIFACTS: yes
     OCAML_PLATFORM_NAME: OCamlPlatform
     OCAML_VERSION: 4.10.0
+    FLEXDLL_VERSION: bd636def70d941674275b2f4b6c13a34ba23f9c9
     OPAM_VERSION: e99250505f5c12ae93d494b21c0a3f5ecdbc405f
+    DUNE_VERSION: 2.5.1
+    DUNIVERSE_VERSION: 414f2a25354bc2fcd95f9b22018fe633f9969a69
   matrix:
     - OCAML_PORT: msvc64
       DEP_MODE: lib-ext
@@ -17,7 +20,7 @@ environment:
     - OCAML_PORT: mingw64
       DEP_MODE: lib-pkg
       WINDOWS: yes
-    - OCAML_PORT:
+    - OCAML_PORT: auto
       DEP_MODE: lib-ext
       WINDOWS: yes
     - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
@@ -53,16 +56,15 @@ for:
       BUILD_FOLDER: '%APPVEYOR_BUILD_FOLDER%'
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
-      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" download_opam
     build_script:
-      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" pre_build
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" build
-      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" ocaml_platform
     cache:
       - '%CYG_CACHE%'
+      - '%APPVEYOR_BUILD_FOLDER%\ocaml-%OCAML_VERSION%.tar.gz'
+      - '%APPVEYOR_BUILD_FOLDER%\flexdll-%FLEXDLL_VERSION%.tar.gz'
       - '%APPVEYOR_BUILD_FOLDER%\opam-%OPAM_VERSION%.tar.gz'
-      - '%APPVEYOR_BUILD_FOLDER%\opam\bootstrap'
-      - '%APPVEYOR_BUILD_FOLDER%\opam\src_ext\archives'
+      - '%APPVEYOR_BUILD_FOLDER%\dune-%DUNE_VERSION%.tar.gz'
+      - '%APPVEYOR_BUILD_FOLDER%\duniverse-%DUNIVERSE_VERSION%.tar.gz'
 
 
 # Uncomment this to enable Remote Desktop on the build worker at the end of the
