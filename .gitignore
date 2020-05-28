@@ -1,5 +1,9 @@
-opam
-ocaml
+/ocaml*
+/flexdll*
+/opam*
+/dune*
+/duniverse*
+/*.diff
 
 # Created by https://www.gitignore.io/api/linux,macos,ocaml,windows
 # Edit at https://www.gitignore.io/?templates=linux,macos,ocaml,windows
