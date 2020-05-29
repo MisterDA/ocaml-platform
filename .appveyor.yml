@@ -18,7 +18,7 @@ environment:
       DEP_MODE: lib-ext
       WINDOWS: yes
     - OCAML_PORT: mingw64
-      DEP_MODE: lib-pkg
+      DEP_MODE: lib-ext
       WINDOWS: yes
     - OCAML_PORT: auto
       DEP_MODE: lib-ext
