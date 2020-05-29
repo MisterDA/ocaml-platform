@@ -62,12 +62,18 @@ build_ocaml() {
         ./configure --prefix="$PREFIX" --host=x86_64-pc-windows
     elif [[ "$OCAML_PORT" = mingw64 ]]; then
         ./configure --prefix="$PREFIX" --host=x86_64-w64-mingw32
+    elif [[ "$OCAML_PORT" = auto ]]; then
+        ./configure --prefix="$PREFIX"
     fi
 
     MAKEFLAGS="-j$(nproc)"; export MAKEFLAGS
-    make flexdll
+    if [[ "$OCAML_PORT" == "msvc64" ]] || [[ "$OCAML_PORT" == "mingw64" ]]; then
+        make flexdll
+    fi
     make
-    make flexlink.opt
+    if [[ "$OCAML_PORT" == "msvc64" ]] || [[ "$OCAML_PORT" == "mingw64" ]]; then
+        make flexlink.opt
+    fi
     make install
     unset MAKEFLAGS
 

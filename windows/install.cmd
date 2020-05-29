@@ -79,7 +79,7 @@ goto :EOF
     set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-x86_64-gcc-g++
     set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% x86_64-w64-mingw32-g++
   )
-  if "%OCAML_PORT%" equ "" (
+  if "%OCAML_PORT%" equ "auto" (
     set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% gcc-g++ flexdll
     set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% g++ flexlink
   )
