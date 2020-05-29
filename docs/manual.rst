@@ -149,6 +149,7 @@ Roadmap
 #. Integrate and test the platform into the host.
 
    - shell integration (Opam should take care of that)
+
    - editor integration
       + VSCode
       + Atom
@@ -195,7 +196,7 @@ Build system
 
 Opam integration
   - the package must already exist in the `Opam repository
-    <https://github.com/ocaml/opam-repository>__`;
+    <https://github.com/ocaml/opam-repository>`__;
   - the package must use Dune features for `generating opam files
     <https://dune.readthedocs.io/en/stable/opam.html#generating-opam-files>`__;
   - the source repository should not contain an existing opam file.
