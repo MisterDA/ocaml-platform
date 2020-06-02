@@ -144,9 +144,8 @@ build_duniverse() {
 
     cd "duniverse-${DUNIVERSE_VERSION}"
 
-    eval $(opam env --switch=default)
-    dune build @install
-    cp _build/install/default/bin/duniverse.exe "$PREFIX_WIN\\bin"
+    opam exec -- dune build @install
+    opam exec -- cp _build/install/default/bin/duniverse.exe "$PREFIX_WIN\\bin"
 }
 
 
