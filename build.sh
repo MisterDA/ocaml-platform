@@ -1,11 +1,11 @@
 #!/bin/bash
 
-set -eu
+set -euo pipefail
 
 if [ -z "${OCAML_PLATFORM_NAME-}" ]; then OCAML_PLATFORM_NAME='OCamlPlatform'; fi
 
 if [ -z "${OPAM_REPO-}" ]; then
-    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
+    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
 
 if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
@@ -22,7 +22,7 @@ command -v make  >/dev/null 2>&1 || { echo >&2 "make is missing.";  exit 1; }
 command -v patch >/dev/null 2>&1 || { echo >&2 "patch is missing."; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo >&2 "unzip is missing."; exit 1; }
 
-download_file() { curl -SLfs "$1" -o "$2"; }
+download_file() { if [[ ! -f "$2" ]]; then curl -SLfs "$1" -o "$2"; fi; }
 
 while getopts 's:' c; do
     case $c in
@@ -68,9 +68,7 @@ environment() {
 }
 
 bootstrap_opam() {
-    echo "=============== PWD ============="
-    pwd
-    echo "================================="
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
     download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" \
                   "opam-${OPAM_VERSION}.tar.gz"
@@ -82,20 +80,44 @@ bootstrap_opam() {
     make cold-install -j"$(nproc)"
 }
 
-build_ocaml_platform() {
+setup_opam() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
     cd "$PREFIX" || exit
 
     OPAMROOT="${PREFIX}/opam"; export OPAMROOT
+    MAKEFLAGS=-j$(nproc); export MAKEFLAGS
 
     opam init -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPO"
+}
+
+build_ocaml_platform() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
     opam exec -- opam install -y --with-doc \
-        $(opam list --required-by ocaml-platform --columns=package -s) \
-        ocaml-platform
+         $(opam list --required-by ocaml-platform --columns=package -s) \
+         ocaml-platform
+}
+
+build_duniverse() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
+    cd "$BUILDDIR" || exit
+
+    download_file "https://github.com/ocamllabs/duniverse/archive/${DUNIVERSE_VERSION}.tar.gz" "duniverse-${DUNIVERSE_VERSION}.tar.gz"
+    tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
+
+    cd "duniverse-${DUNIVERSE_VERSION}"
+
+    opam exec -- dune build @install
+    cp _build/install/default/bin/duniverse.exe "${PREFIX}/bin"
 }
 
 artifacts() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
     if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
 
     opam exec -- opam clean -cars
@@ -112,4 +134,5 @@ artifacts() {
 environment
 bootstrap_opam
 build_ocaml_platform
+build_duniverse
 artifacts
