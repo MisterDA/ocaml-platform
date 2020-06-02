@@ -144,8 +144,9 @@ build_duniverse() {
 
     cd "duniverse-${DUNIVERSE_VERSION}"
 
-    opam exec --switch=default -- make
-    opam exec --switch=default -- make install PREFIX="$PREFIX_WIN\\bin"
+    eval $(opam env --switch=default)
+    make
+    make install PREFIX="$PREFIX_WIN\\bin"
 }
 
 
