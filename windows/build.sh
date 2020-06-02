@@ -134,6 +134,15 @@ setup_opam() {
     opam init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPO}"
 }
 
+eval_opam_env() {
+    eval $(opam env --switch=default | sed 's/\r$//')
+    PATH="$(/usr/bin/cygpath.exe -p "$PATH")"; export PATH
+    OPAM_SWITCH_PREFIX="$(cygpath -p "$OPAM_SWITCH_PREFIX")"; export  OPAM_SWITCH_PREFIX
+    CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH
+    OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH
+    MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH
+}
+
 build_duniverse() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
@@ -144,8 +153,9 @@ build_duniverse() {
 
     cd "duniverse-${DUNIVERSE_VERSION}"
 
-    opam exec -- dune build @install
-    opam exec -- cp _build/install/default/bin/duniverse.exe "$PREFIX_WIN\\bin"
+    eval_opam_env
+    dune build @install
+    cp _build/install/default/bin/duniverse.exe "$PREFIX_WIN\\bin"
 }
 
 
