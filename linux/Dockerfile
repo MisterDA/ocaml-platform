@@ -21,7 +21,6 @@ FROM ocaml-platform-builder-base AS ocaml-platform-builder
 ARG PREFIX
 ARG OCAML_VERSION
 ARG OPAM_VERSION
-ARG DUNIVERSE_VERSION
 
 RUN useradd --create-home --shell /bin/sh user
 RUN mkdir -p "$PREFIX" && chown -R user:user "$PREFIX"
@@ -34,16 +33,11 @@ WORKDIR "opam-${OPAM_VERSION}"
 RUN make cold CONFIGURE_ARGS="--prefix '$PREFIX'"
 RUN make cold-install -j$(nproc) V=1
 
-ADD --chown=user:user https://github.com/ocamllabs/duniverse/archive/$DUNIVERSE_VERSION.tar.gz duniverse-$DUNIVERSE_VERSION.tar.gz
-RUN tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
-WORKDIR "duniverse-${DUNIVERSE_VERSION}"
-RUN opam exec -- dune build @install
-RUN cp _build/install/default/bin/duniverse.exe "${PREFIX}/bin"
-
 FROM ocaml-platform-builder AS ocaml-platform
 ARG PREFIX
 ARG OPAM_REPO
 ARG OCAML_VERSION
+ARG DUNIVERSE_VERSION
 WORKDIR "$PREFIX"
 RUN opam init -v -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
@@ -52,6 +46,13 @@ RUN opam exec -- opam install -v -y --with-doc \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
 RUN opam exec -- opam clean -cars
+
+WORKDIR /home/user
+ADD --chown=user:user https://github.com/ocamllabs/duniverse/archive/$DUNIVERSE_VERSION.tar.gz duniverse-$DUNIVERSE_VERSION.tar.gz
+RUN tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
+WORKDIR "duniverse-${DUNIVERSE_VERSION}"
+RUN opam exec -- dune build @install
+RUN cp _build/install/default/bin/duniverse "${PREFIX}/bin"
 
 FROM ocaml-platform-builder AS ocaml-platform-tester
 ARG PREFIX
