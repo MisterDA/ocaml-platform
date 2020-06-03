@@ -106,6 +106,8 @@ build_opam() {
     WITH_MCCS=
     if [[ "${DEP_MODE}" = "lib-ext" ]]; then WITH_MCCS=--with-mccs; fi
 
+    if [[ -z "${DEP_MODE-}" ]]; then DEP_MODE=lib-ext; fi
+
     ./configure --prefix="$PREFIX_WIN" "$PRIVATE_RUNTIME" "$WITH_MCCS"
     if [[ "${DEP_MODE}" = "lib-ext" ]]; then make lib-ext; fi
     make opam

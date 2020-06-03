@@ -1,4 +1,3 @@
-image: Visual Studio 2019
 platform: x64
 
 clone_depth: 1
@@ -7,24 +6,31 @@ environment:
   global:
     VERBOSE: yes
     ARTIFACTS: yes
-    OCAML_PLATFORM_NAME: OCamlPlatform
     OCAML_VERSION: 4.10.0
     FLEXDLL_VERSION: bd636def70d941674275b2f4b6c13a34ba23f9c9
     OPAM_VERSION: e99250505f5c12ae93d494b21c0a3f5ecdbc405f
     DUNE_VERSION: 2.5.1
     DUNIVERSE_VERSION: 414f2a25354bc2fcd95f9b22018fe633f9969a69
+
   matrix:
-    - OCAML_PORT: msvc64
-      DEP_MODE: lib-ext
-      WINDOWS: yes
-    - OCAML_PORT: mingw64
-      DEP_MODE: lib-ext
-      WINDOWS: yes
-    - OCAML_PORT: auto
-      DEP_MODE: lib-ext
-      WINDOWS: yes
-    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    - APPVEYOR_BUILD_WORKER_IMAGE: macOS
+
+    - job_name: msvc64
+      OCAML_PORT: msvc64
+      appveyor_build_worker_image: Visual Studio 2019
+
+    - job_name: mingw64
+      OCAML_PORT: mingw64
+      appveyor_build_worker_image: Visual Studio 2019
+
+    - job_name: Ubuntu
+      appveyor_build_worker_image: Ubuntu
+
+    - job_name: macOS
+      appveyor_build_worker_image: macOS
+
+    - job_name: cygwin
+      OCAML_PORT: auto
+      appveyor_build_worker_image: Visual Studio 2019
 
 for:
   -
@@ -46,13 +52,8 @@ for:
   -
     matrix:
       only:
-        - WINDOWS: yes
+        - appveyor_build_worker_image: Visual Studio 2019
     environment:
-      CYG_ARCH: x86_64
-      CYG_ROOT: C:\cygwin64
-      CYG_SETUP: '%CYG_ROOT%\setup-%CYG_ARCH%.exe'
-      CYG_CACHE: '%APPDATA%\cygwin'
-      CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
       BUILD_FOLDER: '%APPVEYOR_BUILD_FOLDER%'
     install:
       - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
