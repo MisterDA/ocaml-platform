@@ -6,7 +6,8 @@ git:
 env:
   global:
     - OCAML_VERSION: 4.10.0
-    - OPAM_VERSION: e99250505f5c12ae93d494b21c0a3f5ecdbc405f
+    - OPAM_VERSION: 846c64c1b6a7daed87cfd939da359e9a6ab73368
+    - DUNIVERSE_VERSION: 414f2a25354bc2fcd95f9b22018fe633f9969a69
 
 jobs:
   include:
@@ -15,7 +16,7 @@ jobs:
       services:
         - docker
       script:
-        - docker build --build-arg=OCAML_VERSION=$OCAML_VERSION --build-arg=OPAM_VERSION=$OPAM_VERSION -f "linux/Dockerfile" "linux/"
+        - docker build --build-arg=OCAML_VERSION=$OCAML_VERSION --build-arg=OPAM_VERSION=$OPAM_VERSION --build-arg=DUNIVERSE_VERSION=$DUNIVERSE_VERSION -f "linux/Dockerfile" "linux/"
     - os: linux
       dist: bionic
       script:

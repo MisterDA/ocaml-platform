@@ -93,12 +93,9 @@ build_opam() {
     cd "$BUILD_DIR"
 
     download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" "opam-${OPAM_VERSION}.tar.gz"
-    download_file "https://patch-diff.githubusercontent.com/raw/ocaml/opam/pull/4137.diff" '0001-String-val-returns-const-char-*.diff'
     tar xf "opam-${OPAM_VERSION}.tar.gz"
 
     cd "opam-${OPAM_VERSION}"
-
-    patch -Np1 -i '../0001-String-val-returns-const-char-*.diff'
 
     PRIVATE_RUNTIME=
     if [[ "${OCAML_PORT}" = "mingw64" ]]; then PRIVATE_RUNTIME=--with-private-runtime; fi
