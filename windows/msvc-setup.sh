@@ -1,11 +1,9 @@
 #!/bin/bash
 
 set -euo pipefail
+set -o xtrace
 
 if [[ -z "${OCAML_PORT-}" ]] || [[ "${OCAML_PORT}" != "msvc64" ]]; then exit 0; fi
-
-cyg_root_win=$CYG_ROOT
-cyg_root_nix="$(cygpath -u "$cyg_root_win")"
 
 # https://renenyffenegger.ch/notes/development/tools/scripts/personal/vsenv_bat
 vsenv_bat() {
@@ -22,25 +20,25 @@ EOF
 }
 
 cygwin_bat() {
-    grep -qxF 'VSCMD_VCVARSALL_INIT' "${cyg_root_nix}/Cygwin.bat" && return
+    grep -qxF 'VSCMD_VCVARSALL_INIT' /Cygwin.bat && return
 
     {
-        head -n-1 "${cyg_root_nix}/Cygwin.bat";
+        head -n-1 /Cygwin.bat;
         vsenv_bat | unix2dos
-        tail -n1 "${cyg_root_nix}/Cygwin.bat";
-    } > "${cyg_root_nix}/OCamlPlatform.bat"
+        tail -n1 /Cygwin.bat;
+    } > /OCamlPlatform.bat
 }
 
 mintty_bat() {
-    if [ -e "${cyg_root_nix}/bin/mintty.bat" ]; then return; fi
+    if [ -e /bin/OCamlPlatform-mintty.bat ]; then return; fi
 
     {
         cat <<EOF
 @echo off
 $(vsenv_bat)
-$cyg_root_win\\bin\\mintty.exe -i $cyg_root_win\\Cygwin.ico -
+$CYG_ROOT\\bin\\mintty.exe -i $CYG_ROOT\\Cygwin.ico -
 EOF
-    } | unix2dos > "${cyg_root_nix}/bin/OCamlPlatform-mintty.bat"
+    } | unix2dos > /bin/OCamlPlatform-mintty.bat
 }
 
 msvs_promote_path() {

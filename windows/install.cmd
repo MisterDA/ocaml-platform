@@ -26,7 +26,7 @@ if "%OCAML_PORT%" neq "auto" if "%OCAML_PORT%" neq "msvc64" if "%OCAML_PORT%" ne
 )
 
 if not defined OCAML_PLATFORM_NAME set OCAML_PLATFORM_NAME=OCamlPlatform
-if not defined CYG_ROOT set CYG_ROOT="C:\%OCAML_PLATFORM_NAME%"
+if not defined CYG_ROOT set CYG_ROOT=C:\%OCAML_PLATFORM_NAME%
 if not exist "%CYG_ROOT%" mkdir "%CYG_ROOT%"
 
 goto %1
