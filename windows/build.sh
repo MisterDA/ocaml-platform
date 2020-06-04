@@ -97,13 +97,13 @@ build_opam() {
 
     cd "opam-${OPAM_VERSION}"
 
+    if [[ -z "${DEP_MODE-}" ]]; then DEP_MODE=lib-ext; fi
+
     PRIVATE_RUNTIME=
     if [[ "${OCAML_PORT}" = "mingw64" ]]; then PRIVATE_RUNTIME=--with-private-runtime; fi
 
     WITH_MCCS=
     if [[ "${DEP_MODE}" = "lib-ext" ]]; then WITH_MCCS=--with-mccs; fi
-
-    if [[ -z "${DEP_MODE-}" ]]; then DEP_MODE=lib-ext; fi
 
     ./configure --prefix="$PREFIX_WIN" "$PRIVATE_RUNTIME" "$WITH_MCCS"
     if [[ "${DEP_MODE}" = "lib-ext" ]]; then make lib-ext; fi

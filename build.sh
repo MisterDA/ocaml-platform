@@ -133,6 +133,7 @@ artifacts() {
 
 environment
 bootstrap_opam
+setup_opam
 build_ocaml_platform
 build_duniverse
 artifacts
