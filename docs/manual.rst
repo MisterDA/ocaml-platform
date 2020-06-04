@@ -22,105 +22,119 @@ Installation
 Linux
 =====
 
-Check if your distribution has an ``ocaml-platform`` package; if so,
-install it! Otherwise, the following script installs the OCaml Platform
-into ``/opt/ocaml-platform`` and updates your shell.
+Check if your distribution has the ``ocaml-platform`` package; if so,
+install it! Otherwise, the OCaml Platform is installed by running the
+following command in a terminal.
 
 .. code:: sh
 
-   sh -c "$(curl -sSL 'https://raw.githubusercontent.com/MisterDA/ocaml-platform/master/linux/installer.sh')"
+   sh -c "$(curl -fsSL 'https://raw.githubusercontent.com/MisterDA/ocaml-platform/master/linux/installer.sh')"
 
 *Coming soon!*
 
 Windows
 =======
 
-Installers
-----------
-
 Download and run our installer for Windows x86_64.
 
 *Coming soon!*
 
+macOS
+=====
 
-Build from source
------------------
+Check if your package manager has the ``ocaml-platform`` package; if
+so, install it! Otherwise, the OCaml Platform is installed by running
+the following command in a terminal.
+
+.. code:: sh
+
+   sh -c "$(curl -fsSL 'https://raw.githubusercontent.com/MisterDA/ocaml-platform/master/macos/installer.sh')"
+
+*Coming soon!*
+
+Building from source
+********************
+
+You can use our build scripts to build and setup the OCaml Platform by
+yourself. Start by downloading or cloning this repository, and move to
+the repository's root directory.
+
+Linux
+=====
+
+Set the ``PREFIX`` environment variable to change the installation
+directory.
+
+.. code:: sh
+
+   ./build.sh -s linux
+
+macOS
+=====
+
+Set the ``PREFIX`` environment variable to change the installation
+directory.
+
+.. code:: sh
+
+   ./build.sh -s macOS
+
+Windows
+=======
 
 msvc64
   Have a standard working installation of Visual Studio, and
   `installed C++ support in Visual Studio
   <https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=vs-2019>`__.
 
-  If you have installed Visual Studio in a non-standard location, or
-  are using an edition other than VS 2019, then set the ``VSWHERE``
-  variable to the location of ``wswhere``. (by default,
-  ``%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere``)
-  before running the install script.
+  The OCaml Platform installer looks for the ``vswhere`` tool (by
+  default, ``%ProgramFiles(x86)%\Microsoft Visual
+  Studio\Installer\vswhere``) to find C/C++ compiler.
 
-mingw64,cygwin-native
-  No prerequisites.
+  Set the ``OCAML_PORT`` variable to ``msvc64``.
 
-This procedure requires an Internet connection. Download and extract
-this repository's `archive
-<https://github.com/MisterDA/ocaml-platform/archive/master.zip>`__.
+mingw64
+  Set the ``OCAML_PORT`` variable to ``mingw64``.
 
-Open as **administrator** a ``cmd.exe``, and ``cd`` to this directory.
+Open a ``cmd.exe``. To install the OCaml Platform system-wide, open
+the cmd as an administrator. Move to the repository's root directory.
 
-Then, tune the environment variables:
+Set the ``CYG_ROOT`` variable to change the installation directory.
 
 .. code:: bat
 
-   @rem Any git ref will work
-   @rem To select a custom Opam repo, edit the URLs in windows/install.cmd
-   set OCAML_VERSION=4.10.0
-   set OPAM_VERSION=2.1.0-alpha
-   
-   @rem Choose between "" (cygwin native) "mingw64" "msvc64"
-   set OCAML_PORT=msvc64
-   
    call windows\install.cmd all
 
-macOS
-=====
+Docker
+======
 
-The following script installs the OCaml Platform into
-``/opt/ocaml-platform`` and updates your shell.
-
-.. code:: sh
-
-   sh -c "$(curl -sSL 'https://raw.githubusercontent.com/MisterDA/ocaml-platform/master/macos/installer.sh')"
-
-*Coming soon!*
+A Dockerfile of the platform is found in `linux/Dockerfile
+<../linux/Dockerfile/>`__.
 
 Using the OCaml Platform
 ************************
 
-Windows (MSVC)
-==============
+Windows
+=======
 
 In the following, we’ll assume that ``CYG_ROOT`` is the root directory
-of the Cygwin environment.
+of the OCaml Platform (the root of the Cygwin environment).
 
-To run interactive **Unix shell** scripts in the OCaml Platform, open
-``%CYG_ROOT%\bin\mintty.bat`` (recommended) or
-``%CYG_ROOT%\Cygwin.bat``.
-
-To run interactive **Windows scripts** (i.e., cmd or PowerShell), load
-the MSVC environment first (replace with the path to your installation
-of Visual Studio):
+Unix commands and scripts should always be executed from a Bash login
+shell, e.g.:
 
 .. code:: bat
 
-   if "%VSCMD_VCVARSALL_INIT%" neq 1 (
-     if not defined "%VSINSTALLDIR%" set VSINSTALLDIR="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\\"
-     call "'%VSINSTALLDIR%"\VC\Auxiliary\Build\vcvars64.bat
-   )
+   "%CYG_ROOT%\bin\bash.exe" -lc "/path/to/script.bash"
 
-Unix scripts should be executed from a login shell, e.g.:
+MSVC
+----
 
-.. code:: bat
+To load the OCamlPlatform from cmd or Powershell, run
+``%CYG_ROOT\OCamlPlatform.bat``.
 
-   "%CYG_ROOT%\bin\bash.exe" -lc "script.bash"
+To load a graphical unix shell, open
+``%CYG_ROOT%\bin\OCamlPlatform-mintty.bat``.
 
 Roadmap
 *******
