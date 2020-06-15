@@ -47,7 +47,6 @@ jobs:
         shell: cmd
     env:
       OCAML_PORT: mingw64
-      BUILD_FOLDER: $GITHUB_WORKSPACE
     steps:
       - uses: actions/checkout@v2
       - name: install
@@ -61,7 +60,6 @@ jobs:
         shell: cmd
     env:
       OCAML_PORT: auto
-      BUILD_FOLDER: $GITHUB_WORKSPACE
     steps:
       - uses: actions/checkout@v2
       - name: install
