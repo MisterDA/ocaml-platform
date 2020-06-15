@@ -32,6 +32,11 @@ if not exist "%CYG_ROOT%" mkdir "%CYG_ROOT%"
 goto %1
 goto :EOF
 
+:all
+  call :install
+  call :build
+goto :EOF
+
 :CheckPackage
   "%CYG_ROOT%\bin\bash.exe" -lc "cygcheck -dc %1" | findstr %1 > nul
   if %ERRORLEVEL% equ 1 (
