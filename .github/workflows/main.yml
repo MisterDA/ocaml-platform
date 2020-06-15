@@ -1,4 +1,4 @@
-name: OCaml Platform Unixes CI
+name: OCaml Platform CI
 
 on:
   push:
@@ -26,3 +26,19 @@ jobs:
     - uses: actions/checkout@v2
     - name: OCaml Platform build
       run: $GITHUB_WORKSPACE/build.sh -s macos
+  op_windows:
+    strategy:
+      matrix:
+        ocaml-port: [msvc64, mingw64, auto]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+    env:
+      OCAML_PORT: ${{ matrix.ocaml-port }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: install
+      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" install
+    - name: build
+      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" build
