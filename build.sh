@@ -35,6 +35,14 @@ while getopts 's:' c; do
     esac
 done
 
+nproc() {
+    if [ "$HOST_SYSTEM" = linux ]; then
+        nproc
+    elif [ "$HOST_SYSTEM" = macos ]; then
+        sysctl -n hw.logicalcpu
+    fi
+}
+
 environment() {
     if [ "$VERBOSE" = yes ]; then
         V=1; export V # Make
