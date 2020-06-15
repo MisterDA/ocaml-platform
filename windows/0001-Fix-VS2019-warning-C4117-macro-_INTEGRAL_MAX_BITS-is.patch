@@ -1,0 +1,46 @@
+From 38d259a750d90018621861a5a4446cdefd8f40ee Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Antonin=20D=C3=A9cimo?= <antonin.decimo@gmail.com>
+Date: Mon, 15 Jun 2020 18:07:45 +0200
+Subject: [PATCH] Fix VS2019 warning C4117: macro '_INTEGRAL_MAX_BITS' is
+ reserved
+
+VS2019 throws the following warning [1] about the _INTEGRAL_MAX_BITS
+[2] macro:
+
+    stat.c(33): error C2220: the following warning is treated as an error
+    stat.c(33): warning C4117: macro name '_INTEGRAL_MAX_BITS' is reserved, '#define' ignored
+
+The doc reads:
+
+> _INTEGRAL_MAX_BITS Defined as the integer literal value 64, the
+> maximum size (in bits) for a non-vector integral type. This macro is
+> always defined.
+
+Even if it is supposed to be always defined, a simple fix inspired
+from ReactOS [3] is to check wether it really is defined or not, and
+define it if needed.
+
+[1]: https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4117
+[2]: https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros?view=vs-2019
+[3]: https://jira.reactos.org/browse/CORE-16555
+---
+ otherlibs/win32unix/stat.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/otherlibs/win32unix/stat.c b/otherlibs/win32unix/stat.c
+index cafa8e3d8..5504af02e 100644
+--- a/otherlibs/win32unix/stat.c
++++ b/otherlibs/win32unix/stat.c
+@@ -30,7 +30,9 @@
+ #include <caml/osdeps.h>
+ #include "unixsupport.h"
+ #include "cst2constr.h"
++#ifndef _INTEGRAL_MAX_BITS
+ #define _INTEGRAL_MAX_BITS 64
++#endif
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <time.h>
+-- 
+2.27.0
+

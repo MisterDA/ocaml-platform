@@ -58,6 +58,8 @@ build_ocaml() {
 
     cd "ocaml-${OCAML_VERSION}"
 
+    patch -Np1 -i ../windows/0001-Fix-VS2019-warning-C4117-macro-_INTEGRAL_MAX_BITS-is.patch
+
     if [[ "$OCAML_PORT" = msvc64 ]]; then
         ./configure --prefix="$PREFIX" --host=x86_64-pc-windows
     elif [[ "$OCAML_PORT" = mingw64 ]]; then
