@@ -99,6 +99,8 @@ build_opam() {
 
     cd "opam-${OPAM_VERSION}"
 
+    patch -Np1 -i ../patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+
     if [[ -z "${DEP_MODE-}" ]]; then DEP_MODE=lib-ext; fi
 
     PRIVATE_RUNTIME=

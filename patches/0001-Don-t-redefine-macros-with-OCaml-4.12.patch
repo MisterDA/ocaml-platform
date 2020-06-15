@@ -1,0 +1,48 @@
+From fec16c01bf8adc191a7448780842064e5dc0641f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Antonin=20D=C3=A9cimo?= <antonin.decimo@gmail.com>
+Date: Mon, 15 Jun 2020 21:14:16 +0200
+Subject: [PATCH] Don't redefine macros with OCaml 4.12
+
+Macros `Val_none` and `Some_val` are part of the standard library
+starting with OCaml 4.12.
+
+In some environments, redefining a macro triggers a compiler warning.
+When warnings are treated as errors, the build fails.
+
+Issue discussing the introduction of the macros and the problem:
+https://github.com/ocaml/ocaml/issues/5154
+
+Commit introducing the macros in the standard library:
+https://github.com/ocaml/ocaml/commit/973eeb1867f41ef2669ad4cbfa9c2e76ddef1749
+
+ocaml-mccs PR:
+https://github.com/AltGr/ocaml-mccs/pull/30
+---
+ ...01-Don-t-redefine-macros-with-OCaml-4.12.patch | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+ create mode 100644 src_ext/patches/mccs.common/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+
+diff --git a/src_ext/patches/mccs.common/0001-Don-t-redefine-macros-with-OCaml-4.12.patch b/src_ext/patches/mccs.common/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+new file mode 100644
+index 00000000..7ab06821
+--- /dev/null
++++ b/src_ext/patches/mccs.common/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+@@ -0,0 +1,15 @@
++diff -Naur a/src/mccs_stubs.cpp b/src/mccs_stubs.cpp
++--- a/src/mccs_stubs.cpp	2019-12-11 16:55:17.000000000 +0000
+++++ b/src/mccs_stubs.cpp	2020-06-15 19:12:01.824155051 +0000
++@@ -23,8 +23,10 @@
++ #include <osi_solver.h>
++ #endif
++ 
+++#if OCAML_VERSION < 41200
++ #define Val_none Val_int(0)
++-#define Some_val(v)  Field(v,0)
+++#define Some_val(v) Field(v, 0)
+++#endif
++ 
++ value Val_some (value v)
++ {
+-- 
+2.27.0
+

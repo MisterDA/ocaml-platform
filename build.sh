@@ -84,6 +84,8 @@ bootstrap_opam() {
 
     cd "opam-$OPAM_VERSION" || exit
 
+    patch -Np1 -i ../patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+
     make cold CONFIGURE_ARGS="--prefix $PREFIX"
     make cold-install -j"$(nproc)"
 }
