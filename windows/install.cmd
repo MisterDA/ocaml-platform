@@ -109,6 +109,7 @@ goto :EOF
 
 :build
   call :VsEnv
-  "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""$BUILD_FOLDER"")""/windows/msvc-setup.sh"
-  "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""$BUILD_FOLDER"")""/windows/build.sh"
+  set BUILD_FOLDER=%~dp0
+  "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""%BUILD_FOLDER:~0,-1%"")""/msvc-setup.sh"
+  "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""%BUILD_FOLDER:~0,-1%"")""/build.sh"
 goto :EOF
