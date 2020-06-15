@@ -133,10 +133,6 @@ artifacts() {
     cd "$PREFIX" || exit
     cd .. || exit
     tar czf "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
-
-    if [ "${APPVEYOR-}" = True ] || [ "${APPVEYOR-}" = true ]; then
-        appveyor PushArtifact "${BUILDDIR}/${OCAML_PLATFORM_NAME}.tar.gz"
-    fi
 }
 
 environment
