@@ -39,7 +39,5 @@ jobs:
       OCAML_PORT: ${{ matrix.ocaml-port }}
     steps:
     - uses: actions/checkout@v2
-    - name: install
-      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" install
-    - name: build
-      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" build
+    - name: OCaml Platform build
+      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" all

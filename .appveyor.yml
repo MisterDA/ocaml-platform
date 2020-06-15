@@ -53,10 +53,8 @@ for:
     matrix:
       only:
         - appveyor_build_worker_image: Visual Studio 2019
-    install:
-      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" install
     build_script:
-      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" build
+      - call "%APPVEYOR_BUILD_FOLDER%\windows\install.cmd" all
     cache:
       - '%CYG_CACHE%'
       - '%APPVEYOR_BUILD_FOLDER%\ocaml-%OCAML_VERSION%.tar.gz'
