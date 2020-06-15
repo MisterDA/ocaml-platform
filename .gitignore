@@ -4,6 +4,8 @@
 /dune*
 /duniverse*
 /*.diff
+/*.tmp
+/setup-x86_64.exe
 
 # Created by https://www.gitignore.io/api/linux,macos,ocaml,windows
 # Edit at https://www.gitignore.io/?templates=linux,macos,ocaml,windows
