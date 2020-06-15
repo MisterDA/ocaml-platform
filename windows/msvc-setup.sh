@@ -8,14 +8,11 @@ if [[ -z "${OCAML_PORT-}" ]] || [[ "${OCAML_PORT}" != "msvc64" ]]; then exit 0; 
 # https://renenyffenegger.ch/notes/development/tools/scripts/personal/vsenv_bat
 vsenv_bat() {
     cat <<'EOF'
-:VsEnv
-  if defined VSCMD_VER goto :EOF
-  for /f "usebackq delims=#" %%a in (`"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -all -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
-  "%VsDevCmd_Path%" -arch=amd64
-  set VsDevCmd_Path=
-  set VSWHERE=
-goto :EOF
-call :VsEnv
+if defined VSCMD_VER goto :EOF
+for /f "usebackq delims=#" %%a in (`"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -all -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
+call "%VsDevCmd_Path%" -arch=amd64
+set VsDevCmd_Path=
+set VSWHERE=
 EOF
 }
 
@@ -25,6 +22,7 @@ cygwin_bat() {
         vsenv_bat | unix2dos
         tail -n1 /Cygwin.bat;
     } > /OCamlPlatform.bat
+    chmod +x /OCamlPlatform.bat
 }
 
 mintty_bat() {
@@ -37,6 +35,7 @@ $(vsenv_bat)
 $CYG_ROOT\\bin\\mintty.exe -i $CYG_ROOT\\Cygwin.ico -
 EOF
     } | unix2dos > /bin/OCamlPlatform-mintty.bat
+    chmod +x /bin/OCamlPlatform-mintty.bat
 }
 
 msvs_promote_path() {
