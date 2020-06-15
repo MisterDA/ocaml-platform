@@ -20,8 +20,6 @@ EOF
 }
 
 cygwin_bat() {
-    grep -qxF 'VSCMD_VCVARSALL_INIT' /Cygwin.bat && return
-
     {
         head -n-1 /Cygwin.bat;
         vsenv_bat | unix2dos
