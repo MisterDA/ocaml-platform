@@ -31,8 +31,12 @@ mintty_bat() {
     {
         cat <<EOF
 @echo off
-$(vsenv_bat)
+call :VsEnv
 $CYG_ROOT\\bin\\mintty.exe -i $CYG_ROOT\\Cygwin.ico -
+
+:VsEnv
+$(vsenv_bat)
+goto :EOF
 EOF
     } | unix2dos > /bin/OCamlPlatform-mintty.bat
     chmod +x /bin/OCamlPlatform-mintty.bat
