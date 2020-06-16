@@ -7,6 +7,9 @@ on:
     branches: [ master ]
 
 env:
+  OCAML_PLATFORM_NAME: OCamlPlatform
+  ARTIFACTS: yes
+
   OCAML_VERSION: 4.10.0
   FLEXDLL_VERSION: bd636def70d941674275b2f4b6c13a34ba23f9c9
   OPAM_VERSION: 632e53e43d62322c4ae916ff86e2ad7fa79ace61
@@ -18,14 +21,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: OCaml Platform build
-      run: $GITHUB_WORKSPACE/build.sh -s linux
+      with:
+        name: OCaml Platform build
+        run: $GITHUB_WORKSPACE/build.sh -s linux
+    - uses: actions/upload-artifact@v2
+      with:
+        path: $OCAML_PLATFORM_NAME.tar.gz
+
   op_macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: OCaml Platform build
-      run: $GITHUB_WORKSPACE/build.sh -s macos
+      with:
+        name: OCaml Platform build
+        run: $GITHUB_WORKSPACE/build.sh -s macos
+    - uses: actions/upload-artifact@v2
+      with:
+        path: $OCAML_PLATFORM_NAME.tar.gz
+
   op_windows:
     strategy:
       fail-fast: false
@@ -39,5 +52,9 @@ jobs:
       OCAML_PORT: ${{ matrix.ocaml-port }}
     steps:
     - uses: actions/checkout@v2
-    - name: OCaml Platform build
-      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" all
+      with:
+        name: OCaml Platform build
+        run: call "%GITHUB_WORKSPACE%\windows\install.cmd" all
+    - uses: actions/upload-artifact@v2
+      with:
+        path: $OCAML_PLATFORM_NAME.tar.gz

@@ -161,9 +161,21 @@ build_duniverse() {
     cp _build/install/default/bin/duniverse.exe "$PREFIX_WIN\\bin"
 }
 
+artifacts() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
+    if [ ! "${ARTIFACTS-}" = yes ]; then return 0; fi
+
+    opam exec -- opam clean -cars
+
+    cd "$PREFIX" || exit
+    cd .. || exit
+    tar czf "${BUILD_DIR}/${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
+}
 
 build_ocaml
 build_opam
 build_dune
 setup_opam
 build_duniverse
+artifacts
