@@ -121,8 +121,8 @@ build_duniverse() {
 
     cd "duniverse-${DUNIVERSE_VERSION}"
 
-    opam exec -- dune build @install
-    cp _build/install/default/bin/duniverse.exe "${PREFIX}/bin"
+    opam exec -- make
+    opam exec -- make install PREFIX="${PREFIX}/bin"
 }
 
 artifacts() {
