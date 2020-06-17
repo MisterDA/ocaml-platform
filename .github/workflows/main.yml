@@ -21,9 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        name: OCaml Platform build
-        run: $GITHUB_WORKSPACE/build.sh -s linux
+    - name: OCaml Platform build
+      run: $GITHUB_WORKSPACE/build.sh -s linux
     - uses: actions/upload-artifact@v2
       with:
         path: $OCAML_PLATFORM_NAME.tar.gz
@@ -32,9 +31,8 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        name: OCaml Platform build
-        run: $GITHUB_WORKSPACE/build.sh -s macos
+    - name: OCaml Platform build
+      run: $GITHUB_WORKSPACE/build.sh -s macos
     - uses: actions/upload-artifact@v2
       with:
         path: $OCAML_PLATFORM_NAME.tar.gz
@@ -52,9 +50,8 @@ jobs:
       OCAML_PORT: ${{ matrix.ocaml-port }}
     steps:
     - uses: actions/checkout@v2
-      with:
-        name: OCaml Platform build
-        run: call "%GITHUB_WORKSPACE%\windows\install.cmd" all
+    - name: OCaml Platform build
+      run: call "%GITHUB_WORKSPACE%\windows\install.cmd" all
     - uses: actions/upload-artifact@v2
       with:
         path: $OCAML_PLATFORM_NAME.tar.gz
