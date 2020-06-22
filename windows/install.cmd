@@ -99,7 +99,7 @@ goto :EOF
 goto :EOF
 
 :VsEnv
-  if "%OCAML_PORT%" neq "msvc64" goto :EOF
+  if "%OCAML_PORT%" neq "msvc64" if "%ARTIFACTS%" neq "yes" goto :EOF
   if defined VSCMD_VER goto :EOF
   for /f "usebackq delims=#" %%a in (`"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -all -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
   call "%VsDevCmd_Path%" -arch=amd64

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+https://docs.microsoft.com/en-us/windows/win32/sbscs/application-manifests
+https://docs.microsoft.com/en-us/windows/compatibility/application-executable-manifest
+https://docs.microsoft.com/en-us/previous-versions/bb756929(v=msdn.10)
+https://docs.microsoft.com/en-us/windows/win32/sysinfo/targeting-your-application-at-windows-8-1
+https://stackoverflow.com/a/54212524/3566655
+-->
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+    <assemblyIdentity
+        type="win32"
+        name="OCaml.OCamlPlatform.release"
+        version="0.0.0.0"
+        processorArchitecture="ia64"
+    />
+    <description>OCaml Platform Installer</description>
+    <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+        <application>
+            <!-- Windows 10 -->
+            <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+        </application>
+    </compatibility>
+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+        <security>
+            <requestedPrivileges>
+                <!--
+                  UAC settings:
+                  - app should run at same integrity level as calling process
+                  - app does not need to manipulate windows belonging to
+                    higher-integrity-level processes
+                -->
+                <requestedExecutionLevel
+                    level="asInvoker"
+                    uiAccess="false"
+                />
+            </requestedPrivileges>
+        </security>
+    </trustInfo>
+</assembly>

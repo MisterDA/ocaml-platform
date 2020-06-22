@@ -170,7 +170,29 @@ artifacts() {
 
     cd "$PREFIX" || exit
     cd .. || exit
-    tar czf "${BUILD_DIR}/${OCAML_PLATFORM_NAME}.tar.gz" "$(basename "$PREFIX")"
+
+    cat <<EOF > config.txt
+;!@Install@!UTF-8!
+Title="OCaml Platform installer"
+BeginPrompt="The OCaml Platform will be installed in $PREFIX. Continue?"
+RunProgram="setup.bat"
+;!@InstallEnd@!
+EOF
+
+    cat <<EOF | unix2dos > setup.bat
+@echo off
+move "$OCAML_PLATFORM_NAME" "$PREFIX"
+EOF
+
+    download_file "https://www.7-zip.org/a/lzma1900.7z" "lzma1900.7z"
+    "${PROGRAMFILES}/7-Zip/7z.exe" e lzma1900.7z -o. bin/7zSD.sfx
+    mt.exe -manifest "${BUILD_DIR}/manifest.xml" -outputresource:"7zSD.sfx;#1"
+
+    "${PROGRAMFILES}/7-Zip/7z.exe" a "${OCAML_PLATFORM_NAME}.7z" setup.bat "$OCAML_PLATFORM_NAME"
+    cat 7zSD.sfx config.txt "${OCAML_PLATFORM_NAME}.7z" > "${BUILD_DIR}/${OCAML_PLATFORM_NAME}_Installer.exe"
+    chmod +x "${BUILD_DIR}/${OCAML_PLATFORM_NAME}_Installer.exe"
+
+    rm -rf config.txt setup.bat lzma1900.7z 7zSD.sfx "${OCAML_PLATFORM_NAME}.7z" # needed?
 }
 
 build_ocaml

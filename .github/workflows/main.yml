@@ -54,4 +54,4 @@ jobs:
       run: call "%GITHUB_WORKSPACE%\windows\install.cmd" all
     - uses: actions/upload-artifact@v2
       with:
-        path: $OCAML_PLATFORM_NAME.tar.gz
+        path: "${OCAML_PLATFORM_NAME}_Installer.exe"
