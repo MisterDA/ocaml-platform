@@ -12,8 +12,8 @@ if [[ "${BUILD_DIR:0:1}" != '/' ]]; then
     exit 1
 fi
 
-if [[ -z "${OPAM_REPO-}" ]]; then
-    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
+if [[ -z "${OPAM_REPOSITORY-}" ]]; then
+    OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
 
 if [[ -z "${OCAML_VERSION-}" ]]; then OCAML_VERSION=trunk; fi
@@ -134,7 +134,7 @@ setup_opam() {
 
     cd "$PREFIX"
 
-    opam init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPO}"
+    opam init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPOSITORY}"
 }
 
 eval_opam_env() {

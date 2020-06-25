@@ -4,8 +4,8 @@ set -euo pipefail
 
 if [ -z "${OCAML_PLATFORM_NAME-}" ]; then OCAML_PLATFORM_NAME='OCamlPlatform'; fi
 
-if [ -z "${OPAM_REPO-}" ]; then
-    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
+if [ -z "${OPAM_REPOSITORY-}" ]; then
+    OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
 
 if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
@@ -100,7 +100,7 @@ setup_opam() {
 
     opam init -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
-        "$OPAM_REPO"
+        "$OPAM_REPOSITORY"
 }
 
 build_ocaml_platform() {

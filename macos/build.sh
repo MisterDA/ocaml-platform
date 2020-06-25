@@ -4,8 +4,8 @@ set -eu
 set -o xtrace
 
 
-if [ -z "${OPAM_REPO-}" ]; then
-    OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
+if [ -z "${OPAM_REPOSITORY-}" ]; then
+    OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
 fi
 
 if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
@@ -60,7 +60,7 @@ make install
 
 
 cd "$PREFIX" || exit
-opam init --verbose -a --disable-sandboxing -y "$OPAM_REPO"
+opam init --verbose -a --disable-sandboxing -y "$OPAM_REPOSITORY"
 eval $(opam env)
 opam install --verbose -y --with-doc \
      $(opam list --required-by ocaml-platform --columns=package -s) \

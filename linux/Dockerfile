@@ -1,5 +1,5 @@
 ARG PREFIX=/opt/OCamlPlatform
-ARG OPAM_REPO='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
+ARG OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 ARG OCAML_VERSION=4.10.0
 ARG OPAM_VERSION=master
 ARG DUNIVERSE_VERSION=master
@@ -35,13 +35,13 @@ RUN make cold-install -j$(nproc) V=1
 
 FROM ocaml-platform-builder AS ocaml-platform
 ARG PREFIX
-ARG OPAM_REPO
+ARG OPAM_REPOSITORY
 ARG OCAML_VERSION
 ARG DUNIVERSE_VERSION
 WORKDIR "$PREFIX"
 RUN opam init -v -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
-        "$OPAM_REPO"
+        "$OPAM_REPOSITORY"
 RUN opam exec -- opam install -v -y --with-doc \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
@@ -56,12 +56,12 @@ RUN cp _build/install/default/bin/duniverse "${PREFIX}/bin"
 
 FROM ocaml-platform-builder AS ocaml-platform-tester
 ARG PREFIX
-ARG OPAM_REPO
+ARG OPAM_REPOSITORY
 ARG OCAML_VERSION
 WORKDIR "$PREFIX"
 RUN opam init -v -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
-        "$OPAM_REPO"
+        "$OPAM_REPOSITORY"
 RUN opam exec -- opam install -v -y --with-test \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
