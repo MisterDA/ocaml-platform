@@ -21,6 +21,27 @@ if [[ -z "${FLEXDLL_VERSION-}" ]]; then FLEXDLL_VERSION=master; fi
 if [[ -z "${OPAM_VERSION-}" ]]; then OPAM_VERSION=master; fi
 if [[ -z "${DUNE_VERSION-}" ]]; then DUNE_VERSION=master; fi
 if [[ -z "${DUNIVERSE_VERSION-}" ]]; then DUNIVERSE_VERSION=master; fi
+if [[ -z "${SEVENZIP_VERSION-}" ]]; then SEVENZIP_VERSION=1900; fi
+
+if [[ -z "${OCAML_URL-}" ]]; then
+    OCAML_URL="https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz"
+fi
+if [[ -z "${FLEXDLL_URL-}" ]]; then
+    FLEXDLL_URL="https://github.com/flexdll/flexdll/archive/${FLEXDLL_VERSION}.tar.gz"
+fi
+if [[ -z "${OPAM_URL-}" ]]; then
+    OPAM_URL="https://github.com/opam/opam/archive/${OPAM_VERSION}.tar.gz"
+fi
+if [[ -z "${DUNE_URL-}" ]]; then
+    DUNE_URL="https://github.com/dune/dune/archive/${DUNE_VERSION}.tar.gz"
+fi
+if [[ -z "${DUNIVERSE_URL-}" ]]; then
+    DUNIVERSE_URL="https://github.com/duniverse/duniverse/archive/${DUNIVERSE_VERSION}.tar.gz"
+fi
+if [[ -z "${SEVENZIP_URL-}" ]]; then
+    SEVENZIP_URL="https://www.7-zip.org/a/lzma${SEVENZIP_VERSION}.7z"
+fi
+
 
 if [[ -z "${PREFIX-}" ]]; then PREFIX="/opt/${OCAML_PLATFORM_NAME}"; fi
 mkdir -p "$PREFIX"
@@ -50,9 +71,9 @@ build_ocaml() {
 
     cd "$BUILD_DIR"
 
-    download_file "https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz" "ocaml-${OCAML_VERSION}.tar.gz"
+    download_file "$OCAML_URL" "ocaml-${OCAML_VERSION}.tar.gz"
     tar xf "ocaml-${OCAML_VERSION}.tar.gz"
-    download_file "https://github.com/alainfrisch/flexdll/archive/${FLEXDLL_VERSION}.tar.gz" "flexdll-${FLEXDLL_VERSION}.tar.gz"
+    download_file "$FLEXDLL_URL" "flexdll-${FLEXDLL_VERSION}.tar.gz"
     tar xf "flexdll-${FLEXDLL_VERSION}.tar.gz"
     cp -r "flexdll-${FLEXDLL_VERSION}"/* "ocaml-${OCAML_VERSION}/flexdll"
 
@@ -94,7 +115,7 @@ build_opam() {
 
     cd "$BUILD_DIR"
 
-    download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" "opam-${OPAM_VERSION}.tar.gz"
+    download_file "$OPAM_URL" "opam-${OPAM_VERSION}.tar.gz"
     tar xf "opam-${OPAM_VERSION}.tar.gz"
 
     cd "opam-${OPAM_VERSION}"
@@ -120,7 +141,7 @@ build_dune() {
 
     cd "$BUILD_DIR"
 
-    download_file "https://github.com/ocaml/dune/archive/${DUNE_VERSION}.tar.gz" "dune-${DUNE_VERSION}.tar.gz"
+    download_file "$DUNE_URL" "dune-${DUNE_VERSION}.tar.gz"
     tar xf "dune-${DUNE_VERSION}.tar.gz"
 
     cd "dune-${DUNE_VERSION}"
@@ -151,7 +172,7 @@ build_duniverse() {
 
     cd "$BUILD_DIR"
 
-    download_file "https://github.com/ocamllabs/duniverse/archive/${DUNIVERSE_VERSION}.tar.gz" "duniverse-${DUNIVERSE_VERSION}.tar.gz"
+    download_file "$DUNIVERSE_URL" "duniverse-${DUNIVERSE_VERSION}.tar.gz"
     tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
 
     cd "duniverse-${DUNIVERSE_VERSION}"
@@ -184,15 +205,15 @@ EOF
 move "$OCAML_PLATFORM_NAME" "$PREFIX"
 EOF
 
-    download_file "https://www.7-zip.org/a/lzma1900.7z" "lzma1900.7z"
-    "${PROGRAMFILES}/7-Zip/7z.exe" e lzma1900.7z -o. bin/7zSD.sfx
+    download_file "$SEVENZIP_URL" "lzma${SEVENZIP_VERSION}.7z"
+    "${PROGRAMFILES}/7-Zip/7z.exe" e "lzma${SEVENZIP_VERSION}.7z" -o. bin/7zSD.sfx
     mt.exe -manifest "${BUILD_DIR}/manifest.xml" -outputresource:"7zSD.sfx;#1"
 
     "${PROGRAMFILES}/7-Zip/7z.exe" a "${OCAML_PLATFORM_NAME}.7z" setup.bat "$OCAML_PLATFORM_NAME"
     cat 7zSD.sfx config.txt "${OCAML_PLATFORM_NAME}.7z" > "${BUILD_DIR}/${OCAML_PLATFORM_NAME}_Installer.exe"
     chmod +x "${BUILD_DIR}/${OCAML_PLATFORM_NAME}_Installer.exe"
 
-    rm -rf config.txt setup.bat lzma1900.7z 7zSD.sfx "${OCAML_PLATFORM_NAME}.7z" # needed?
+    rm -rf config.txt setup.bat "lzma${SEVENZIP_VERSION}.7z" 7zSD.sfx "${OCAML_PLATFORM_NAME}.7z" # needed?
 }
 
 build_ocaml

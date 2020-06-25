@@ -8,8 +8,15 @@ if [ -z "${OPAM_REPOSITORY-}" ]; then
     OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
 fi
 
-if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=4.10.0; fi
+if [ -z "${OCAML_VERSION-}" ]; then OCAML_VERSION=trunk; fi
 if [ -z "${OPAM_VERSION-}"  ]; then OPAM_VERSION=master;  fi
+if [ -z "${DUNIVERSE_VERSION-}" ]; then DUNIVERSE_VERSION=master; fi
+if [ -z "${OPAM_URL-}" ]; then
+    OPAM_URL="https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz"
+fi
+if [ -z "${DUNIVERSE_URL-}" ]; then
+    DUNIVERSE_URL="https://github.com/ocamllabs/duniverse/archive/${DUNIVERSE_VERSION}.tar.gz"
+fi
 
 if [ -z "${BUILDDIR-}" ]; then BUILDDIR="$(pwd)"; fi
 
@@ -78,8 +85,7 @@ environment() {
 bootstrap_opam() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
-    download_file "https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz" \
-                  "opam-${OPAM_VERSION}.tar.gz"
+    download_file "$OPAM_URL" "opam-${OPAM_VERSION}.tar.gz"
     tar xf "opam-${OPAM_VERSION}.tar.gz"
 
     cd "opam-$OPAM_VERSION" || exit
@@ -116,7 +122,7 @@ build_duniverse() {
 
     cd "$BUILDDIR" || exit
 
-    download_file "https://github.com/ocamllabs/duniverse/archive/${DUNIVERSE_VERSION}.tar.gz" "duniverse-${DUNIVERSE_VERSION}.tar.gz"
+    download_file "$DUNIVERSE_URL" "duniverse-${DUNIVERSE_VERSION}.tar.gz"
     tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
 
     cd "duniverse-${DUNIVERSE_VERSION}"
