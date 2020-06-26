@@ -134,6 +134,20 @@ build_opam() {
     make opam-installer install
 }
 
+bootstrap_opam() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
+    download_file "$OPAM_URL" "opam-${OPAM_VERSION}.tar.gz"
+    tar xf "opam-${OPAM_VERSION}.tar.gz"
+
+    cd "opam-$OPAM_VERSION" || exit
+
+    patch -Np1 -i ../patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+
+    make cold CONFIGURE_ARGS="--prefix $PREFIX"
+    make cold-install -j"$(nproc)"
+}
+
 build_dune() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
@@ -163,6 +177,14 @@ eval_opam_env() {
     CAML_LD_LIBRARY_PATH="$(cygpath -p "$CAML_LD_LIBRARY_PATH")"; export CAML_LD_LIBRARY_PATH
     OCAML_TOPLEVEL_PATH="$(cygpath -p "$OCAML_TOPLEVEL_PATH")"; export OCAML_TOPLEVEL_PATH
     MANPATH="$(cygpath -p "$MANPATH")"; export MANPATH
+}
+
+build_ocaml_platform() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
+    opam exec -- opam install -y --with-doc \
+         $(opam list --required-by ocaml-platform --columns=package -s) \
+         ocaml-platform
 }
 
 build_duniverse() {
@@ -214,9 +236,11 @@ EOF
     rm -rf config.txt setup.bat "lzma${SEVENZIP_VERSION}.7z" 7zSD.sfx "${OCAML_PLATFORM_NAME}.7z" # needed?
 }
 
-build_ocaml
-build_opam
-build_dune
+#build_ocaml
+#build_opam
+bootstrap_opam
+#build_dune
 setup_opam
+build_ocaml_platform
 build_duniverse
 artifacts
