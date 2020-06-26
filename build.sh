@@ -98,7 +98,7 @@ bootstrap_opam() {
 
 setup_opam() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
-
+    set -o xtrace
     cd "$PREFIX" || exit
 
     OPAMROOT="${PREFIX}/opam"; export OPAMROOT
@@ -107,6 +107,7 @@ setup_opam() {
     opam init -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPOSITORY"
+    set +o xtrace
 }
 
 build_ocaml_platform() {
