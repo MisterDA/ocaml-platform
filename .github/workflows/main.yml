@@ -18,6 +18,7 @@ env:
 
   DUNE_VERSION: 2.6.0
   DUNIVERSE_VERSION: 47faea8522e8e44ba0dbd04403425970aa5c2662
+  MSVS_TOOLS_VERSION: 0.4.1
 
 jobs:
   op_ubuntu:

@@ -98,18 +98,7 @@ goto :EOF
   call :UpgradeCygwin
 goto :EOF
 
-:VsEnv
-  if "%OCAML_PORT%" neq "msvc64" if "%ARTIFACTS%" neq "yes" goto :EOF
-  if defined VSCMD_VER goto :EOF
-  for /f "usebackq delims=#" %%a in (`"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -all -latest -property installationPath`) do set VsDevCmd_Path=%%a\Common7\Tools\VsDevCmd.bat
-  call "%VsDevCmd_Path%" -arch=amd64
-  set VsDevCmd_Path=
-  set VSWHERE=
-goto :EOF
-
 :build
-  call :VsEnv
   set BUILD_FOLDER=%~dp0
-  "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""%BUILD_FOLDER:~0,-1%"")""/msvc-setup.sh"
   "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""%BUILD_FOLDER:~0,-1%"")""/build.sh"
 goto :EOF

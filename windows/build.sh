@@ -22,6 +22,7 @@ if [[ -z "${OPAM_VERSION-}" ]]; then OPAM_VERSION=master; fi
 if [[ -z "${DUNE_VERSION-}" ]]; then DUNE_VERSION=master; fi
 if [[ -z "${DUNIVERSE_VERSION-}" ]]; then DUNIVERSE_VERSION=master; fi
 if [[ -z "${SEVENZIP_VERSION-}" ]]; then SEVENZIP_VERSION=1900; fi
+if [[ -z "${MSVS_TOOLS_VERSION-}" ]]; then MSVS_TOOLS_VERSION=master; fi
 
 if [[ -z "${OCAML_URL-}" ]]; then
     OCAML_URL="https://github.com/ocaml/ocaml/archive/${OCAML_VERSION}.tar.gz"
@@ -41,7 +42,11 @@ fi
 if [[ -z "${SEVENZIP_URL-}" ]]; then
     SEVENZIP_URL="https://www.7-zip.org/a/lzma${SEVENZIP_VERSION}.7z"
 fi
+if [[ -z "${MSVS_TOOLS_URL-}" ]]; then
+    MSVS_TOOLS_URL="https://github.com/metastack/msvs-tools/archive/${MSVS_TOOLS_VERSION}.tar.gz"
+fi
 
+if [[ -z "${PROFILE-}" ]]; then PROFILE="$HOME/.bash_profile"; fi
 
 if [[ -z "${PREFIX-}" ]]; then PREFIX="/opt/${OCAML_PLATFORM_NAME}"; fi
 mkdir -p "$PREFIX"
@@ -65,6 +70,27 @@ if [[ "$VERBOSE" = yes ]]; then
     OPAMVERBOSE=1; export OPAMVERBOSE
 fi
 
+
+setup_msvs() {
+    echo -e "\n=== ${FUNCNAME[0]} ===\n"
+
+    cd "$BUILD_DIR"
+
+    download_file "$MSVS_TOOLS_URL" "msvs-tools-${MSVS_TOOLS_VERSION}"
+    tar xf "msvs-tools-${MSVS_TOOLS_VERSION}"
+
+    eval "$("./msvs-tools-${MSVS_TOOLS_VERSION}/msvs-detect" --arch=x64 --output=shell)"
+    PATH="$PATH:$MSVS_PATH"; export PATH
+    eval "./msvs-tools-${MSVS_TOOLS_VERSION}/msvs-promote-pat"
+
+    cat >> /etc/profile.d/msvs-tools.sh <<EOF
+PATH='$PATH'; export PATH
+MSVS_NAME='$MSVS_NAME'; export MSVS_NAME
+MSVS_PATH='$MSVS_PATH'; export MSVS_PATH
+MSVS_INC='$MSVS_INC'; export MSVS_INC
+MSVS_LIB='$MSVS_LIB'; export MSVS_LIB
+EOF
+}
 
 build_ocaml() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
