@@ -13,8 +13,8 @@ env:
   OCAML_VERSION: 4.10.0
   FLEXDLL_VERSION: 0.38
 
-  OPAM_VERSION: 66c1fcba3ed973eefeb37451a9cb551683a9d8d7
-  OPAM_URL: https://github.com/MisterDA/opam/${{ env.OPAM_VERSION }}.tar.gz
+  OPAM_VERSION: 3de8ee39d428c4d346fe6ee4c5ab57317623e007
+  OPAM_URL: https://github.com/MisterDA/opam/archive/3de8ee39d428c4d346fe6ee4c5ab57317623e007.tar.gz
 
   DUNE_VERSION: 2.6.0
   DUNIVERSE_VERSION: 47faea8522e8e44ba0dbd04403425970aa5c2662
