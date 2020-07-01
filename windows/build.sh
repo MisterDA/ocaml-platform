@@ -163,6 +163,8 @@ build_opam() {
 bootstrap_opam() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
+    cd "$BUILD_DIR"
+
     download_file "$OPAM_URL" "opam-${OPAM_VERSION}.tar.gz"
     tar xf "opam-${OPAM_VERSION}.tar.gz"
 
