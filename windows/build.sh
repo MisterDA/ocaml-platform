@@ -194,8 +194,8 @@ setup_opam() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
     cd "$PREFIX"
-
-    opam init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPOSITORY}"
+    printf "PATH=%s" "$PATH"
+    bin/opam init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPOSITORY}"
 }
 
 eval_opam_env() {
