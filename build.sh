@@ -148,5 +148,5 @@ environment
 bootstrap_opam
 setup_opam
 build_ocaml_platform
-build_duniverse
+#build_duniverse
 artifacts

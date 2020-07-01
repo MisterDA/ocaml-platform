@@ -270,5 +270,5 @@ bootstrap_opam
 #build_dune
 setup_opam
 build_ocaml_platform
-build_duniverse
+#build_duniverse
 artifacts
