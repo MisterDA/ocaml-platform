@@ -195,7 +195,8 @@ setup_opam() {
 
     cd "$PREFIX"
     printf "PATH=%s" "$PATH"
-    bin/opam init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPOSITORY}"
+    ls /opt/OCamlPlatform/bin
+    opam.exe init -y -a --disable-sandboxing --dot-profile=~/.bash_profile default "${OPAM_REPOSITORY}"
 }
 
 eval_opam_env() {
