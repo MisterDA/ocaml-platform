@@ -44,7 +44,7 @@ done
 
 nproc() {
     if [ "$HOST_SYSTEM" = linux ]; then
-        nproc
+        /usr/bin/env nproc
     elif [ "$HOST_SYSTEM" = macos ]; then
         sysctl -n hw.logicalcpu
     fi
@@ -102,7 +102,7 @@ setup_opam() {
     cd "$PREFIX" || exit
 
     OPAMROOT="${PREFIX}/opam"; export OPAMROOT
-    MAKEFLAGS=-j$(nproc); export MAKEFLAGS
+    MAKEFLAGS="-j$(nproc)"; export MAKEFLAGS
 
     opam init -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
