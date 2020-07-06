@@ -2,11 +2,14 @@
 
 set -euo pipefail
 
-if [[ -z "${1-}" ]]; then
-    BUILD_DIR="$(/usr/bin/env dirname "$(cygpath -u "$0")")/.."
-else
-    BUILD_DIR="$1"
+PROJECT_DIR="$1"
+BUILD_DIR="$2"
+
+if [[ "${PROJECT_DIR:0:1}" != '/' ]]; then
+    >&2 printf "PROJECT_DIR='%s' must be absolute." "$PROJECT_DIR"
+    exit 1
 fi
+
 if [[ "${BUILD_DIR:0:1}" != '/' ]]; then
     >&2 printf "BUILD_DIR='%s' must be absolute." "$BUILD_DIR"
     exit 1
@@ -52,6 +55,14 @@ if [[ -z "${PREFIX-}" ]]; then PREFIX="/opt/${OCAML_PLATFORM_NAME}"; fi
 mkdir -p "$PREFIX"
 PREFIX_WIN="$(cygpath -w "$PREFIX")"
 PATH="$PREFIX/bin:$PATH"; export PATH
+
+printf "GITHUB_WORKSPACE='%s'\n" "$GITHUB_WORKSPACE"
+printf "HOME='%s'\n" "$HOME"
+printf "PROJECT_DIR='%s'\n" "$PROJECT_DIR"
+printf "BUILD_DIR='%s'\n" "$BUILD_DIR"
+printf "PREFIX='%s'\n" "$PREFIX"
+printf "PREFIX_WIN='%s'\n" "$PREFIX_WIN"
+printf "PATH='%s'\n" "$PATH"
 
 command -v curl  >/dev/null 2>&1 || { echo >&2 "curl is missing.";  exit 1; }
 command -v git   >/dev/null 2>&1 || { echo >&2 "git is missing.";   exit 1; }
@@ -144,7 +155,7 @@ build_opam() {
 
     cd "opam-${OPAM_VERSION}"
 
-    patch -Np1 -i ../patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+    patch -Np1 -i "$PROJECT_DIR"/patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
 
     if [[ -z "${DEP_MODE-}" ]]; then DEP_MODE=lib-ext; fi
 
@@ -170,7 +181,7 @@ bootstrap_opam() {
 
     cd "opam-$OPAM_VERSION" || exit
 
-    patch -Np1 -i ../patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
+    patch -Np1 -i "$PROJECT_DIR"/patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
 
     make cold CONFIGURE_ARGS="--prefix $PREFIX"
     make cold-install -j"$(nproc)"
@@ -256,7 +267,7 @@ EOF
 
     download_file "$SEVENZIP_URL" "lzma${SEVENZIP_VERSION}.7z"
     "${PROGRAMFILES}/7-Zip/7z.exe" e "lzma${SEVENZIP_VERSION}.7z" -o. bin/7zSD.sfx
-    mt.exe -manifest "${BUILD_DIR}/manifest.xml" -outputresource:"7zSD.sfx;#1"
+    mt.exe -manifest "${PROJECT_DIR}/windows/manifest.xml" -outputresource:"7zSD.sfx;#1"
 
     "${PROGRAMFILES}/7-Zip/7z.exe" a "${OCAML_PLATFORM_NAME}.7z" setup.bat "$OCAML_PLATFORM_NAME"
     cat 7zSD.sfx config.txt "${OCAML_PLATFORM_NAME}.7z" > "${BUILD_DIR}/${OCAML_PLATFORM_NAME}_Installer.exe"

@@ -99,6 +99,6 @@ goto :EOF
 goto :EOF
 
 :build
-  set BUILD_FOLDER=%~dp0
-  "%CYG_ROOT%\bin\bash.exe" -lc """$(cygpath -u ""%BUILD_FOLDER:~0,-1%"")""/build.sh"
+  if not defined PROJECT_FOLDER set PROJECT_FOLDER=%CD%
+  "%CYG_ROOT%\bin\bash.exe" -lc "PROJECT_DIR=""$(cygpath -u '%PROJECT_FOLDER%')"" && ""$PROJECT_DIR/windows/build.sh"" ""$PROJECT_DIR"" ""$HOME"""
 goto :EOF
