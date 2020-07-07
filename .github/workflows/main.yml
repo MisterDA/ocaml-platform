@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ocaml-port: [msvc64, mingw64, auto]
+        ocaml-port: [msvc64, mingw64]
     runs-on: windows-latest
     defaults:
       run:

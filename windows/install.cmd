@@ -20,7 +20,7 @@
 @rem Do not call setlocal!
 @echo on
 
-if "%OCAML_PORT%" neq "auto" if "%OCAML_PORT%" neq "msvc64" if "%OCAML_PORT%" neq "mingw64" (
+if "%OCAML_PORT%" neq "msvc64" if "%OCAML_PORT%" neq "mingw64" (
   echo "Unsupported OCAML_PORT=%OCAML_PORT%."
   goto :EOF
 )
@@ -85,10 +85,6 @@ goto :EOF
   if "%OCAML_PORT%" equ "mingw64" (
     set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% mingw64-x86_64-gcc-g++
     set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% x86_64-w64-mingw32-g++
-  )
-  if "%OCAML_PORT%" equ "auto" (
-    set CYGWIN_PACKAGES=%CYGWIN_PACKAGES% gcc-g++ flexdll
-    set CYGWIN_COMMANDS=%CYGWIN_COMMANDS% g++ flexlink
   )
 
   set CYGWIN_INSTALL_PACKAGES=
