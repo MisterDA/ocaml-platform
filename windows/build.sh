@@ -155,8 +155,6 @@ build_opam() {
 
     cd "opam-${OPAM_VERSION}"
 
-    patch -Np1 -i "$PROJECT_DIR"/patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
-
     if [[ -z "${DEP_MODE-}" ]]; then DEP_MODE=lib-ext; fi
 
     PRIVATE_RUNTIME=
@@ -180,8 +178,6 @@ bootstrap_opam() {
     tar xf "opam-${OPAM_VERSION}.tar.gz"
 
     cd "opam-$OPAM_VERSION" || exit
-
-    patch -Np1 -i "$PROJECT_DIR"/patches/0001-Don-t-redefine-macros-with-OCaml-4.12.patch
 
     make cold CONFIGURE_ARGS="--prefix $PREFIX"
     make cold-install -j"$(nproc)"
