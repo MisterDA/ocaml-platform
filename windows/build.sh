@@ -34,7 +34,7 @@ if [[ -z "${FLEXDLL_URL-}" ]]; then
     FLEXDLL_URL="https://github.com/flexdll/flexdll/archive/${FLEXDLL_VERSION}.tar.gz"
 fi
 if [[ -z "${OPAM_URL-}" ]]; then
-    OPAM_URL="https://github.com/opam/opam/archive/${OPAM_VERSION}.tar.gz"
+    OPAM_URL="https://github.com/ocaml/opam/archive/${OPAM_VERSION}.tar.gz"
 fi
 if [[ -z "${DUNE_URL-}" ]]; then
     DUNE_URL="https://github.com/dune/dune/archive/${DUNE_VERSION}.tar.gz"
