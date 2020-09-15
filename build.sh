@@ -103,7 +103,6 @@ setup_opam() {
     MAKEFLAGS="-j$(nproc)"; export MAKEFLAGS
 
     opam init -y -a --disable-sandboxing \
-        -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPOSITORY"
     set +o xtrace
 }
