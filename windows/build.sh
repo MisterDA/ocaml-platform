@@ -16,14 +16,14 @@ if [[ "${BUILD_DIR:0:1}" != '/' ]]; then
 fi
 
 if [[ -z "${OPAM_REPOSITORY-}" ]]; then
-    OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
+    OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
 fi
 
 if [[ -z "${OCAML_VERSION-}" ]]; then OCAML_VERSION=trunk; fi
 if [[ -z "${FLEXDLL_VERSION-}" ]]; then FLEXDLL_VERSION=master; fi
 if [[ -z "${OPAM_VERSION-}" ]]; then OPAM_VERSION=master; fi
 if [[ -z "${DUNE_VERSION-}" ]]; then DUNE_VERSION=master; fi
-if [[ -z "${DUNIVERSE_VERSION-}" ]]; then DUNIVERSE_VERSION=master; fi
+if [[ -z "${OPAM_MONOREPO_VERSION-}" ]]; then OPAM_MONOREPO_VERSION=master; fi
 if [[ -z "${SEVENZIP_VERSION-}" ]]; then SEVENZIP_VERSION=1900; fi
 if [[ -z "${MSVS_TOOLS_VERSION-}" ]]; then MSVS_TOOLS_VERSION=master; fi
 
@@ -39,8 +39,8 @@ fi
 if [[ -z "${DUNE_URL-}" ]]; then
     DUNE_URL="https://github.com/dune/dune/archive/${DUNE_VERSION}.tar.gz"
 fi
-if [[ -z "${DUNIVERSE_URL-}" ]]; then
-    DUNIVERSE_URL="https://github.com/duniverse/duniverse/archive/${DUNIVERSE_VERSION}.tar.gz"
+if [[ -z "${OPAM_MONOREPO_URL-}" ]]; then
+    OPAM_MONOREPO_URL="https://github.com/opam-monorepo/opam-monorepo/archive/${OPAM_MONOREPO_VERSION}.tar.gz"
 fi
 if [[ -z "${SEVENZIP_URL-}" ]]; then
     SEVENZIP_URL="https://www.7-zip.org/a/lzma${SEVENZIP_VERSION}.7z"
@@ -223,15 +223,15 @@ build_ocaml_platform() {
          ocaml-platform
 }
 
-build_duniverse() {
+build_opam_monorepo() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
     cd "$BUILD_DIR"
 
-    download_file "$DUNIVERSE_URL" "duniverse-${DUNIVERSE_VERSION}.tar.gz"
-    tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
+    download_file "$OPAM_MONOREPO_URL" "opam-monorepo-${OPAM_MONOREPO_VERSION}.tar.gz"
+    tar xf "opam-monorepo-${OPAM_MONOREPO_VERSION}.tar.gz"
 
-    cd "duniverse-${DUNIVERSE_VERSION}"
+    cd "opam-monorepo-${OPAM_MONOREPO_VERSION}"
 
     eval_opam_env
     make
@@ -278,5 +278,5 @@ bootstrap_opam
 #build_dune
 setup_opam
 build_ocaml_platform
-#build_duniverse
+#build_opam_monorepo
 artifacts

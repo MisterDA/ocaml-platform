@@ -1,8 +1,8 @@
 ARG PREFIX=/opt/OCamlPlatform
-ARG OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform-duniverse'
+ARG OPAM_REPOSITORY='git://github.com/MisterDA/opam-repository.git#ocaml-platform'
 ARG OCAML_VERSION=4.10.0
 ARG OPAM_VERSION=master
-ARG DUNIVERSE_VERSION=master
+ARG OPAM_MONOREPO_VERSION=master
 
 FROM debian:10 AS ocaml-platform-builder-base
 ARG PREFIX
@@ -37,7 +37,7 @@ FROM ocaml-platform-builder AS ocaml-platform
 ARG PREFIX
 ARG OPAM_REPOSITORY
 ARG OCAML_VERSION
-ARG DUNIVERSE_VERSION
+ARG OPAM_MONOREPO_VERSION
 WORKDIR "$PREFIX"
 RUN opam init -v -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
@@ -48,11 +48,11 @@ RUN opam exec -- opam install -v -y --with-doc \
 RUN opam exec -- opam clean -cars
 
 WORKDIR /home/user
-ADD --chown=user:user https://github.com/ocamllabs/duniverse/archive/$DUNIVERSE_VERSION.tar.gz duniverse-$DUNIVERSE_VERSION.tar.gz
-RUN tar xf "duniverse-${DUNIVERSE_VERSION}.tar.gz"
-WORKDIR "duniverse-${DUNIVERSE_VERSION}"
+ADD --chown=user:user https://github.com/ocamllabs/opam-monorepo/archive/OPAM_MONOREPO_VERSION.tar.gz opam-monorepo-$OPAM_MONOREPO_VERSION.tar.gz
+RUN tar xf "opam-monorepo-${OPAM_MONOREPO_VERSION}.tar.gz"
+WORKDIR "opam-monorepo-${OPAM_MONOREPO_VERSION}"
 RUN opam exec -- dune build @install
-RUN cp _build/install/default/bin/duniverse "${PREFIX}/bin"
+RUN cp _build/install/default/bin/opam-monorepo "${PREFIX}/bin"
 
 FROM ocaml-platform-builder AS ocaml-platform-tester
 ARG PREFIX
