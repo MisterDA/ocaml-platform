@@ -110,6 +110,7 @@ setup_opam() {
 build_ocaml_platform() {
     echo -e "\n=== ${FUNCNAME[0]} ===\n"
 
+    opam exec -- opam install -y odoc
     opam exec -- opam install -y --with-doc \
          $(opam list --required-by ocaml-platform --columns=package -s) \
          ocaml-platform

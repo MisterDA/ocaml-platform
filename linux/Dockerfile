@@ -62,6 +62,7 @@ WORKDIR "$PREFIX"
 RUN opam init -v -y -a --disable-sandboxing \
         -c "ocaml-base-compiler.${OCAML_VERSION}" \
         "$OPAM_REPOSITORY"
-RUN opam exec -- opam install -v -y --with-test \
+RUN opam exec -- opam install -y odoc && \
+    opam exec -- opam install -v -y --with-test \
         $(opam list --required-by ocaml-platform --columns=package -s) \
         ocaml-platform
