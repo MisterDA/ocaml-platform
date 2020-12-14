@@ -92,7 +92,7 @@ setup_msvs() {
 
     eval "$("./msvs-tools-${MSVS_TOOLS_VERSION}/msvs-detect" --arch=x64 --output=shell)"
     PATH="$PATH:$MSVS_PATH"; export PATH
-    eval "./msvs-tools-${MSVS_TOOLS_VERSION}/msvs-promote-pat"
+    eval "./msvs-tools-${MSVS_TOOLS_VERSION}/msvs-promote-path"
 
     cat >> /etc/profile.d/msvs-tools.sh <<EOF
 PATH='$PATH'; export PATH
